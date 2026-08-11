@@ -1,4 +1,4 @@
-# fluxovital
+# fluxovital - nome temporário, a definir
 Sistema web para gestão e otimização de fluxo de requisições em Unidades Básicas de Saúde (UBS). Projeto de desenvolvimento Full-Stack, curso +praTi e Codifica (2026).
 
 > **REGRAS DE CONTRIBUIÇÃO (LEITURA OBRIGATÓRIA PARA A EQUIPE)**
@@ -9,8 +9,6 @@ Sistema web para gestão e otimização de fluxo de requisições em Unidades B�
 > `git checkout -b feature/nome-da-sua-tarefa` ou `fix/descricao-do-bug`
 > 3. Abra um Pull Request (PR) da sua branch apontando para a main ao terminar.
 > 4. Solicite a revisão de pelo menos um colega do grupo antes de realizar o merge.
-> 
-> 
 
 ---
 
@@ -18,81 +16,76 @@ Sistema web para gestão e otimização de fluxo de requisições em Unidades B�
 
 Siga as instruções abaixo para rodar a aplicação em seu ambiente de desenvolvimento.
 
-### Pré-requisitos
+## 📋 Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado em sua máquina:
 
-* Git
-* Node.js (Versão LTS recomendada)
-* Editor de código de sua preferência (ex: VSCode)
+- *Node.js* >= 18.0.0
+- *npm* >= 9.0.0 (ou yarn/pnpm)
+- *Git*
+- (Opcional) *Docker* (para execução de serviços locais)
 
 ---
 
-### Passo a Passo
+## 1. Clone o Repositório
 
-1. Clone o repositório:
-```bash
-git clone https://github.com/maisprati-fullstack/fluxovital.git
-cd fluxovital
+git clone <URL-DO-SEU-REPOSITORIO>
+cd <NOME-DA-PASTA-DO-PROJETO>
 
-```
-
-
-2. Instale as dependências:
-```bash
+## 2. Instale as Dependências
 npm install
 
-```
+## 3. Configure as Variáveis de Ambiente
+Copie o arquivo .env.example para .env.local:
+cp .env.example .env.local
 
+Edite o arquivo .env.local com as suas chaves e configurações locais.
+Variáveis obrigatórias:
 
-3. Configuração de Variáveis de Ambiente:
-* Duplique o arquivo `.env.example` (caso exista).
-* Renomeie a cópia para `.env` e preencha as chaves conforme necessário.
+ * PORT - Porta onde a aplicação rodará (ex: 3000)
+ * DATABASE_URL - (A definir na reunião de alinhamento)
 
+## 🗄️ Banco de Dados
 
-4. Execute o projeto:
-```bash
-npm run dev
+(Status: Banco de dados em definição pelo time)
+ * Opções em avaliação: PostgreSQL, SQLite, MongoDB ou Supabase.
+ * ORM / Driver: (A definir - ex: Prisma, Sequelize ou TypeORM).
+   
+## 🛠️ Scripts Disponíveis
 
-```
+Desenvolvimento
+ * npm run dev - Inicia o servidor de desenvolvimento
+ * npm run build - Cria a build de produção
+ * npm run start - Inicia o servidor de produção
+ * npm run lint - Executa a verificação de código (linter)
 
+## 📂 Estrutura do Projeto
 
-Acesse a aplicação no navegador através do endereço indicado no terminal (ex: `http://localhost:3000`).
+meu-projeto/
+├── src/
+│   ├── components/    # Componentes reutilizáveis
+│   ├── pages/         # Ou app/ (Rotas da aplicação)
+│   ├── services/      # Integrações de API / Serviços
+│   └── styles/        # Estilos globais
+├── public/            # Arquivos estáticos (imagens, ícones)
+├── .env.example       # Modelo de variáveis de ambiente
+└── README.md          # Documentação do repositório
 
----
+## 🔒 Segurança
 
-## Fluxo do Dia a Dia de Trabalho (Git Workflow)
+ * Nunca commite o arquivo .env ou .env.local no Git.
+ * Sempre mantenha apenas o .env.example atualizado no repositório com os nomes das variáveis (sem valores reais/sensíveis).
 
-Sempre que for iniciar uma nova tarefa:
+## 🤝 Contribuindo
 
-1. Volte para a main e atualize seu código local:
-```bash
-git checkout main
-git pull origin main
+ * Crie uma branch para sua feature (git checkout -b feature/nome-da-feature)
+ * Faça os seus commits (git commit -m 'feat: minha nova feature')
+ * Envie para o repositório (git push origin feature/nome-da-feature)
+ * Abra um Pull Request para análise do time
+   
+## 🆘 Suporte & Troubleshooting
 
-```
-
-
-2. Crie uma nova branch para a sua tarefa:
-```bash
-git checkout -b feature/minha-nova-feature
-
-```
-
-
-3. Desenvolva suas alterações e faça o commit:
-```bash
-git add .
-git commit -m "feat: adiciona componente X"
-
-```
-
-
-4. Suba sua branch para o GitHub:
-```bash
-git push origin feature/minha-nova-feature
-
-```
-
-
-5. Vá no GitHub e abra o Pull Request (PR) para a branch main.
+Se encontrar problemas ao rodar o projeto, verifique:
+ * Se a sua versão do Node.js é compatível.
+ * Se executou o npm install após atualizar as dependências.
+ * Se o arquivo .env.local foi criado corretamente na raiz do projeto.
