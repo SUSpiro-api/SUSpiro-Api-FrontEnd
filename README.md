@@ -27,31 +27,32 @@ Antes de começar, certifique-se de ter instalado em sua máquina:
 
 ---
 
-## 1. Clone o Repositório
+## 🚀 Como rodar o projeto localmente
 
+### 1. Clone o repositório
+```bash
 git clone <URL-DO-SEU-REPOSITORIO>
 cd <NOME-DA-PASTA-DO-PROJETO>
 
-## 2. Instale as Dependências
+2. Instale as dependências
 npm install
 
-## 3. Configure as Variáveis de Ambiente
+3. Configure as variáveis de ambiente
 Copie o arquivo .env.example para .env.local:
 cp .env.example .env.local
 
 Edite o arquivo .env.local com as suas chaves e configurações locais.
 Variáveis obrigatórias:
-
  * PORT - Porta onde a aplicação rodará (ex: 3000)
  * DATABASE_URL - (A definir na reunião de alinhamento)
 
-## 🗄️ Banco de Dados
+🗄️ Banco de Dados
 
 (Status: Banco de dados em definição pelo time)
  * Opções em avaliação: PostgreSQL, SQLite, MongoDB ou Supabase.
  * ORM / Driver: (A definir - ex: Prisma, Sequelize ou TypeORM).
-   
-## 🛠️ Scripts Disponíveis
+
+🛠️ Scripts Disponíveis
 
 Desenvolvimento
  * npm run dev - Inicia o servidor de desenvolvimento
@@ -59,7 +60,7 @@ Desenvolvimento
  * npm run start - Inicia o servidor de produção
  * npm run lint - Executa a verificação de código (linter)
 
-## 📂 Estrutura do Projeto
+📂 Estrutura do Projeto
 
 meu-projeto/
 ├── src/
@@ -71,21 +72,23 @@ meu-projeto/
 ├── .env.example       # Modelo de variáveis de ambiente
 └── README.md          # Documentação do repositório
 
-## 🔒 Segurança
+🔒 Segurança
 
  * Nunca commite o arquivo .env ou .env.local no Git.
  * Sempre mantenha apenas o .env.example atualizado no repositório com os nomes das variáveis (sem valores reais/sensíveis).
 
-## 🤝 Contribuindo
+🤝 Contribuindo
 
  * Crie uma branch para sua feature (git checkout -b feature/nome-da-feature)
  * Faça os seus commits (git commit -m 'feat: minha nova feature')
  * Envie para o repositório (git push origin feature/nome-da-feature)
  * Abra um Pull Request para análise do time
-   
-## 🆘 Suporte & Troubleshooting
+
+🆘 Suporte & Troubleshooting
 
 Se encontrar problemas ao rodar o projeto, verifique:
  * Se a sua versão do Node.js é compatível.
  * Se executou o npm install após atualizar as dependências.
  * Se o arquivo .env.local foi criado corretamente na raiz do projeto.
+
+---
