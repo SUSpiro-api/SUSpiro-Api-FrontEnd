@@ -9,7 +9,15 @@ export interface AuthService {
   requestPasswordReset(cpf: string): Promise<void>;
 }
 
-export type AuthErrorCode = 'INVALID_CREDENTIALS' | 'NETWORK' | 'NOT_CONFIGURED' | 'UNKNOWN';
+export type AuthErrorCode =
+  | 'INVALID_CREDENTIALS'
+  | 'CPF_NAO_CADASTRADO'
+  | 'SENHA_INCORRETA'
+  | 'CONTA_DESATIVADA'
+  | 'DADOS_INVALIDOS'
+  | 'NETWORK'
+  | 'NOT_CONFIGURED'
+  | 'UNKNOWN';
 
 export class AuthError extends Error {
   readonly code: AuthErrorCode;

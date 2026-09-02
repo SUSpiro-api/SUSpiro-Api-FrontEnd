@@ -8,6 +8,14 @@ const GENERIC_CONNECTION_MESSAGE =
 /** Códigos de `AuthError` que representam falha de conectividade/infra, não do usuário. */
 const CONNECTION_ERROR_CODES = new Set<string>(['NETWORK', 'NOT_CONFIGURED']);
 
+/** Códigos específicos que o backend já manda com uma mensagem pronta em português. */
+const SPECIFIC_MESSAGE_CODES = new Set<string>([
+  'CPF_NAO_CADASTRADO',
+  'SENHA_INCORRETA',
+  'CONTA_DESATIVADA',
+  'DADOS_INVALIDOS',
+]);
+
 const CONNECTION_KEYWORDS = ['conectar', 'connection', 'network'];
 
 function looksLikeConnectionError(error: unknown): boolean {
@@ -36,8 +44,13 @@ function looksLikeInvalidCredentials(error: unknown): boolean {
   return false;
 }
 
-
 export function getLoginErrorMessage(error: unknown): string {
+  // O backend já manda uma mensagem específica e pronta para exibir
+  // (ex: "Este CPF ainda não está cadastrado...", "Senha incorreta.").
+  if (error instanceof AuthError && SPECIFIC_MESSAGE_CODES.has(error.code) && error.message) {
+    return error.message;
+  }
+
   if (looksLikeInvalidCredentials(error)) {
     return 'CPF/e-mail ou senha inválidos. Confira seus dados e tente novamente.';
   }

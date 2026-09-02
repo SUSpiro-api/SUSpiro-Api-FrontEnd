@@ -1,0 +1,60 @@
+const TOKEN_KEY = 'suspiro.auth.token';
+
+export interface TokenPayload {
+  sub: string; // cpf do usuário
+  perfil?: string; // SUPER_ADMIN | ADMIN | USUARIO (conforme JwtService do back)
+  exp: number;
+  iat: number;
+}
+
+export function getToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setToken(token: string): void {
+  try {
+    localStorage.setItem(TOKEN_KEY, token);
+  } catch {
+    // localStorage indisponível (modo privado, etc.) — segue sem persistir
+  }
+}
+
+export function clearToken(): void {
+  try {
+    localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    // ignora
+  }
+}
+
+export function decodeToken(token: string): TokenPayload | null {
+  try {
+    const payloadBase64 = token.split('.')[1];
+    const json = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(json) as TokenPayload;
+  } catch {
+    return null;
+  }
+}
+
+export function isTokenExpired(token: string): boolean {
+  const payload = decodeToken(token);
+  if (!payload?.exp) return true;
+  return Date.now() >= payload.exp * 1000;
+}
+
+/** Sessão válida = existe token salvo e ele ainda não expirou. */
+export function hasValidSession(): boolean {
+  const token = getToken();
+  return Boolean(token) && !isTokenExpired(token as string);
+}
+
+export function getCurrentUser(): TokenPayload | null {
+  const token = getToken();
+  if (!token || isTokenExpired(token)) return null;
+  return decodeToken(token);
+}
