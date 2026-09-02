@@ -29,7 +29,7 @@ function toAuthErrorCode(code: string | undefined, fallback: AuthErrorCode): Aut
 
 async function request<T>(path: string, init: RequestInit): Promise<T> {
   if (!API_URL) {
-    throw new AuthError('A API vai ser configurada', 'NOT_CONFIGURED');
+    throw new AuthError('A API', 'NOT_CONFIGURED');
   }
 
   let response: Response;
@@ -53,11 +53,10 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
   try {
     body = (await response.json()) as ApiErrorResponse;
   } catch {
-    // corpo vazio ou não-JSON, segue com body = {}
+    
   }
 
-  // O backend do SUSpiro devolve { code, message } específicos
-  // (CPF_NAO_CADASTRADO, SENHA_INCORRETA, CONTA_DESATIVADA, DADOS_INVALIDOS).
+  
   if (body.code) {
     const code = toAuthErrorCode(body.code, 'UNKNOWN');
     throw new AuthError(body.message ?? 'Não foi possível concluir a solicitação.', code);

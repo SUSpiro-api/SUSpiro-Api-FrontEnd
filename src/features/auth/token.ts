@@ -2,7 +2,7 @@ const TOKEN_KEY = 'suspiro.auth.token';
 
 export interface TokenPayload {
   sub: string; // cpf do usuário
-  perfil?: string; // SUPER_ADMIN | ADMIN | USUARIO (conforme JwtService do back)
+  perfil?: string; // SUPER_ADMIN | ADMIN | USUARIO 
   exp: number;
   iat: number;
 }
@@ -19,7 +19,7 @@ export function setToken(token: string): void {
   try {
     localStorage.setItem(TOKEN_KEY, token);
   } catch {
-    // localStorage indisponível (modo privado, etc.) — segue sem persistir
+    
   }
 }
 
@@ -27,7 +27,7 @@ export function clearToken(): void {
   try {
     localStorage.removeItem(TOKEN_KEY);
   } catch {
-    // ignora
+    
   }
 }
 
@@ -47,7 +47,7 @@ export function isTokenExpired(token: string): boolean {
   return Date.now() >= payload.exp * 1000;
 }
 
-/** Sessão válida = existe token salvo e ele ainda não expirou. */
+/** Sessão válida */
 export function hasValidSession(): boolean {
   const token = getToken();
   return Boolean(token) && !isTokenExpired(token as string);
