@@ -8,6 +8,7 @@ import './Login.css';
 export function Login({
   onLogin,
   onForgotPassword,
+  onCreateAccount,
   authService = defaultAuthService,
 }: LoginProps) {
   const { values, setField } = useLoginForm();
@@ -36,6 +37,7 @@ export function Login({
             values={values}
             onChange={setField}
             onForgotPassword={onForgotPassword}
+            onCreateAccount={onCreateAccount}
             onSubmit={handleLogin}
           />
         </section>

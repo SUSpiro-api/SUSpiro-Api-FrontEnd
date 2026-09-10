@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { LoginForm } from '../Login/LoginForm';
+import { LoginForm } from './LoginForm';
 import type { LoginFormValues } from '../../features/auth/types';
 
 const initialValues: LoginFormValues = {

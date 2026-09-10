@@ -17,6 +17,7 @@ export function LoginForm({
   onChange,
   onSubmit,
   onForgotPassword,
+  onCreateAccount,
 }: LoginFormProps) {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState('');
@@ -154,6 +155,20 @@ export function LoginForm({
         </div>
 
         <GovBrButton />
+
+        {onCreateAccount && (
+          <p className="login-login-form__footer-note">
+            Ainda não tem uma conta?{' '}
+            <button
+              type="button"
+              className="login-link login-link--button"
+              onClick={onCreateAccount}
+              disabled={isSubmitting}
+            >
+              Criar conta
+            </button>
+          </p>
+        )}
 
         <p className="login-login-form__footer-note">
           Ambiente restrito e seguro do SUSpiro.

@@ -7,6 +7,7 @@ export interface LoginFormProps {
   onChange: <K extends keyof LoginFormValues>(field: K, value: LoginFormValues[K]) => void;
   onSubmit: (values: LoginFormValues) => void | Promise<void>;
   onForgotPassword?: () => void;
+  onCreateAccount?: () => void;
   isSubmitting?: boolean;
   formError?: string;
 }
@@ -14,5 +15,6 @@ export interface LoginFormProps {
 export interface LoginProps {
   onLogin?: (values: Pick<LoginFormValues, 'identifier' | 'password'>) => void | Promise<void>;
   onForgotPassword?: () => void;
+  onCreateAccount?: () => void;
   authService?: AuthService;
 }
