@@ -1,0 +1,36 @@
+.patient-page {
+  min-height: 100vh;
+  padding: var(--space-6);
+  background: var(--color-surface);
+  color: var(--color-ink-900);
+}
+
+.patient-page__header {
+  margin-bottom: var(--space-6);
+}
+
+.patient-page__eyebrow {
+  margin: 0 0 var(--space-2);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-brand);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.patient-page__title {
+  margin: 0;
+  font-size: 28px;
+}
+
+.patient-page__subtitle {
+  margin: var(--space-2) 0 0;
+  color: var(--color-ink-600);
+}
+
+.patient-page__content {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
