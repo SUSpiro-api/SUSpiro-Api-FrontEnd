@@ -1,3 +1,4 @@
+import { CadastroCidadaoForm } from './CadastroCidadaoForm';
 import './patients.css';
 
 export function CadastroCidadaoPage() {
@@ -14,8 +15,15 @@ export function CadastroCidadaoPage() {
       </header>
 
       <section className="patient-page__content">
-        <p>Formulário de cadastro em construção.</p>
+        <CadastroCidadaoForm
+          onSucesso={() => {
+            console.info('Cidadão cadastrado com sucesso.');
+          }}
+          onCancelar={() => {
+            console.info('Cadastro cancelado.');
+          }}
+        />
       </section>
     </main>
   );
-}
+}     
