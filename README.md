@@ -57,7 +57,7 @@ Navegador
 Depois de baixar ou extrair o projeto, a estrutura principal deve ser:
 
 ```text
-Projeto completo integrado/
+
 │
 ├── SUSpiro-Api-BackEnd-main/
 │
