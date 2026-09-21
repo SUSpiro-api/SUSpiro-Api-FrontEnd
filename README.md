@@ -58,7 +58,6 @@ Depois de baixar ou extrair o projeto, a estrutura principal deve ser:
 
 ```text
 
-│
 ├── SUSpiro-Api-BackEnd-main/
 │
 └── SUSpiro-Api-FrontEnd-develop/
@@ -67,8 +66,8 @@ Depois de baixar ou extrair o projeto, a estrutura principal deve ser:
 O backend e o frontend são projetos separados.
 
 ```text
-Projeto completo integrado
-│
+
+
 ├── Backend
 └── Frontend
 ```
@@ -153,34 +152,27 @@ Se o projeto estiver em um repositório Git:
 git clone URL_DO_REPOSITORIO
 ```
 
-Depois abra a pasta:
-
-```text
-Projeto completo integrado
-```
+Depois abra a pasta
 
 Se o projeto foi entregue em `.zip`:
 
 1. Extraia o arquivo.
-2. Localize a pasta `Projeto completo integrado`.
+2. Localize a pasta
 3. Abra essa pasta no VS Code ou IntelliJ.
 
 ---
 
 # 6. Abrir o projeto na IDE
 
-No VS Code ou IntelliJ, abra:
+No VS Code ou IntelliJ, abra o projeto
 
-```text
-Projeto completo integrado
-```
+
 
 Não abra apenas a pasta do backend.
 
 A estrutura deve aparecer aproximadamente assim:
 
 ```text
-Projeto completo integrado
 ├── SUSpiro-Api-BackEnd-main
 └── SUSpiro-Api-FrontEnd-develop
 ```
@@ -193,9 +185,7 @@ Esta parte é importante porque evita problemas com caminhos.
 
 Abra o **Git Bash diretamente dentro da pasta**:
 
-```text
-Projeto completo integrado
-```
+
 
 No Windows, você pode:
 
@@ -206,28 +196,8 @@ No Windows, você pode:
 Depois execute:
 
 ```bash
-pwd
-```
 
-O caminho será parecido com:
 
-```text
-/c/Users/Annde/Downloads/Projeto completo integrado
-```
-
-ou:
-
-```text
-/c/Users/Annde/Desktop/Projeto completo integrado
-```
-
-O caminho pode mudar de máquina para máquina.
-
-O que precisa ser igual é que o final seja:
-
-```text
-Projeto completo integrado
-```
 
 ---
 
@@ -336,11 +306,6 @@ Para sair:
 
 # 11. Entrar na pasta do backend
 
-Agora estamos na pasta:
-
-```text
-Projeto completo integrado
-```
 
 Execute:
 
@@ -351,7 +316,7 @@ cd "SUSpiro-Api-BackEnd-main"
 O terminal agora estará dentro de:
 
 ```text
-Projeto completo integrado/SUSpiro-Api-BackEnd-main
+/SUSpiro-Api-BackEnd-main
 ```
 
 Confira:
@@ -761,7 +726,7 @@ Terminal 1
     └── ./mvnw clean spring-boot:run
 ```
 
-Agora abra um **segundo Git Bash**.
+Agora abra um **segundo Terminal**.
 
 ---
 
@@ -769,21 +734,13 @@ Agora abra um **segundo Git Bash**.
 
 No novo Git Bash, vá para a pasta:
 
-```text
-Projeto completo integrado
-```
-
-Se o terminal já estiver nessa pasta, execute:
-
 ```bash
 cd "SUSpiro-Api-FrontEnd-develop"
 ```
 
-O caminho será:
 
-```text
-Projeto completo integrado/SUSpiro-Api-FrontEnd-develop
-```
+
+
 
 Confira:
 
@@ -827,7 +784,7 @@ cd "../SUSpiro-Api-FrontEnd-develop"
 Esse comando funciona porque as duas pastas ficam no mesmo nível:
 
 ```text
-Projeto completo integrado/
+
 ├── SUSpiro-Api-BackEnd-main/
 └── SUSpiro-Api-FrontEnd-develop/
 ```
@@ -1005,21 +962,6 @@ Frontend:
 http://localhost:5173
 ```
 
----
-
-# 38. Sequência completa de comandos
-
-Supondo que o Git Bash foi aberto diretamente dentro da pasta:
-
-```text
-Projeto completo integrado
-```
-
-## Terminal 1 — Backend
-
-```bash
-cd "SUSpiro-Api-BackEnd-main"
-```
 
 Transforme:
 
@@ -1062,13 +1004,7 @@ Não feche esse terminal.
 Abra outro Git Bash na pasta:
 
 ```text
-Projeto completo integrado
-```
-
-Execute:
-
-```bash
-cd "SUSpiro-Api-FrontEnd-develop"
+ "SUSpiro-Api-FrontEnd-develop"
 ```
 
 Depois:
@@ -1096,7 +1032,7 @@ http://localhost:5173
 A estrutura sempre será:
 
 ```text
-Projeto completo integrado/
+
 │
 ├── SUSpiro-Api-BackEnd-main/
 │
@@ -1137,107 +1073,23 @@ cd ..
 
 ---
 
-# 40. Exemplo real de caminho no Windows
 
-Cada computador terá um caminho diferente.
-
-Por exemplo:
-
-```text
-C:\Users\Annde\Downloads\Projeto completo integrado
-```
-
-No Git Bash isso aparece como:
-
-```text
-/c/Users/Annde/Downloads/Projeto completo integrado
-```
-
-Se o projeto estiver dentro dessa pasta, o comando para entrar no backend continua sendo apenas:
 
 ```bash
 cd "SUSpiro-Api-BackEnd-main"
 ```
 
-Isso torna o guia independente do nome do usuário e do local onde o projeto foi extraído.
+---
+
+
+
+
+
+
 
 ---
 
-# 41. Não use caminhos absolutos no dia a dia
 
-Evite colocar no guia algo como:
-
-```bash
-cd "C:/Users/Annde/Downloads/Projeto final/Projeto completo integrado/SUSpiro-Api-BackEnd-main"
-```
-
-Esse caminho funciona somente para uma determinada máquina.
-
-Prefira:
-
-```bash
-cd "SUSpiro-Api-BackEnd-main"
-```
-
-desde que o terminal esteja aberto na raiz:
-
-```text
-Projeto completo integrado
-```
-
----
-
-# 42. Se o Git Bash abrir em outro lugar
-
-Se o terminal estiver, por exemplo:
-
-```text
-/c/Users/Annde
-```
-
-você precisa primeiro chegar à pasta do projeto.
-
-Exemplo:
-
-```bash
-cd ~/Downloads
-```
-
-Depois:
-
-```bash
-cd "Projeto completo integrado"
-```
-
-Depois:
-
-```bash
-cd "SUSpiro-Api-BackEnd-main"
-```
-
-A diferença é somente onde o projeto foi salvo.
-
----
-
-# 43. Como descobrir onde o projeto está
-
-No Windows Explorer, encontre:
-
-```text
-Projeto completo integrado
-```
-
-Abra essa pasta.
-
-Depois abra o Git Bash nela.
-
-Use:
-
-```bash
-pwd
-```
-
-Assim você sempre saberá exatamente onde está.
 
 ---
 
