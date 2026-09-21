@@ -1,0 +1,6 @@
+ .unauthorized-page { min-height: 100svh; display: grid; place-items: center; padding: 24px; background: var(--color-page-bg); font-family: var(--font-family); }
+.unauthorized-page__card { width: min(100%, 520px); padding: 40px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: #fff; text-align: center; box-shadow: 0 20px 50px rgba(15, 23, 42, .08); }
+.unauthorized-page__code { margin: 0 0 8px; color: var(--color-brand); font-weight: 800; font-size: 44px; }
+.unauthorized-page h1 { margin: 0 0 12px; color: var(--color-ink-900); }
+.unauthorized-page p:not(.unauthorized-page__code) { margin: 0 0 24px; color: var(--color-ink-600); }
+.unauthorized-page button { border: 0; border-radius: var(--radius-sm); padding: 12px 20px; background: var(--color-brand); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
