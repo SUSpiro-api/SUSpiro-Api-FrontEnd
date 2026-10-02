@@ -1,8 +1,0 @@
-.home-page { min-height: 100svh; display: grid; place-items: center; padding: 24px; background: var(--color-page-bg); font-family: var(--font-family); }
-.home-page__card { width: min(100%, 720px); padding: clamp(24px, 5vw, 48px); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: #fff; box-shadow: 0 20px 50px rgba(15, 23, 42, .08); }
-.home-page__eyebrow { margin: 0 0 4px; color: var(--color-brand); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
-.home-page h1 { margin: 0 0 20px; color: var(--color-ink-900); }
-.home-page__card > p:not(.home-page__eyebrow) { margin: 6px 0; color: var(--color-ink-600); }
-.home-page__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-.home-page__actions button { border: 0; border-radius: var(--radius-sm); padding: 12px 18px; background: var(--color-brand); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
-.home-page__actions .home-page__secondary { background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-ink-900); }
