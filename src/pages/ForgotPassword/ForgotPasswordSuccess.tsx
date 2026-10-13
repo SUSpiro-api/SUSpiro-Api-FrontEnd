@@ -20,7 +20,7 @@ export function ForgotPasswordSuccess({ onBack }: ForgotPasswordSuccessProps) {
             Verifique seu e-mail
           </p>
           <p className="login-success-card__text">
-            Se o CPF estiver cadastrado, as instruções de redefinição foram enviadas para o e-mail associado.
+            Enviamos uma senha provisória para o e-mail cadastrado. Entre com ela e cadastre uma nova senha.
           </p>
         </div>
       </div>

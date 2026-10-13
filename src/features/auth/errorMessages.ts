@@ -64,6 +64,10 @@ export function getLoginErrorMessage(error: unknown): string {
 
 /** Mensagem de erro para exibir após uma falha ao solicitar troca  de senha. */
 export function getPasswordResetErrorMessage(error: unknown): string {
+  if (error instanceof AuthError && error.code === 'CPF_NAO_CADASTRADO') {
+    return 'CPF não cadastrado. Confira o número digitado.';
+  }
+
   return looksLikeConnectionError(error)
     ? GENERIC_CONNECTION_MESSAGE
     : 'Não foi possível enviar as instruções. Tente novamente.';

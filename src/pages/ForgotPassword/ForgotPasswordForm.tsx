@@ -43,7 +43,7 @@ export function ForgotPasswordForm({ onBack, onSubmit }: ForgotPasswordFormProps
           Esqueceu sua senha?
         </h1>
         <p className="login-login-form__subtitle">
-          Informe seu CPF. Se ele estiver cadastrado, enviaremos as instruções para o e-mail associado.
+          Informe seu CPF. Enviaremos uma senha provisória para o e-mail cadastrado.
         </p>
       </header>
 

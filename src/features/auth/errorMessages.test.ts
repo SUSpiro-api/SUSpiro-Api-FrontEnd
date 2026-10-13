@@ -33,6 +33,13 @@ describe('getPasswordResetErrorMessage', () => {
     expect(getPasswordResetErrorMessage(error)).toMatch(/conectar ao serviço/);
   });
 
+  it('informa ao usuário quando o CPF não está cadastrado', () => {
+    const error = new AuthError('CPF não cadastrado', 'CPF_NAO_CADASTRADO');
+    expect(getPasswordResetErrorMessage(error)).toBe(
+      'CPF não cadastrado. Confira o número digitado.',
+    );
+  });
+
   it('returns a generic message otherwise', () => {
     const error = new Error('unexpected');
     expect(getPasswordResetErrorMessage(error)).toBe(

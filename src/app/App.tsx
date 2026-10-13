@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ForgotPasswordFeature, LoginFeature } from '../features/auth';
-import { hasValidSession, getCurrentUser } from '../features/auth/token';
+import { hasValidSession, getCurrentUser, precisaTrocarSenha } from '../features/auth/token';
+import { logout } from '../features/auth/service';
+import { TrocaSenhaPage } from '../features/auth/password-change/TrocaSenhaPage';
 import { HomePage } from '../pages/Home/HomePage';
 import { CadastroFuncionarioPage } from '../features/employees/CadastroFuncionarioPage';
 import { getCurrentPath, navigate } from './navigation';
@@ -19,6 +21,7 @@ function resolveRoute(pathname: string): Route {
 export default function App() {
   const [route, setRoute] = useState<Route>(resolveRoute(getCurrentPath()));
   const [isAuthenticated, setIsAuthenticated] = useState(() => hasValidSession());
+  const [senhaProvisoria, setSenhaProvisoria] = useState(() => precisaTrocarSenha());
 
   useEffect(() => {
     const handlePopState = () => setRoute(resolveRoute(getCurrentPath()));
@@ -53,6 +56,7 @@ export default function App() {
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
+    setSenhaProvisoria(precisaTrocarSenha());
     goToHome();
   };
 
@@ -74,6 +78,18 @@ export default function App() {
 
   if (route === '/recuperar-senha') {
     return <ForgotPasswordFeature onBack={goToLogin} />;
+  }
+
+  if (isAuthenticated && senhaProvisoria) {
+    return (
+      <TrocaSenhaPage
+        onConcluido={() => setSenhaProvisoria(false)}
+        onSair={() => {
+          logout();
+          handleLogout();
+        }}
+      />
+    );
   }
 
   if (isAuthenticated) {

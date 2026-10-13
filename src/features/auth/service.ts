@@ -1,15 +1,17 @@
 import { AuthError, type AuthErrorCode, type AuthService, type LoginFormValues } from './types';
-import { setToken, clearToken } from './token';
+import { setToken, clearToken, setSenhaProvisoria } from './token';
 
 const API_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '');
 
 interface ApiErrorResponse {
   message?: string;
+  mensagem?: string;
   code?: string;
 }
 
 interface LoginApiResponse {
   token: string;
+  senhaProvisoria: boolean;
 }
 
 const KNOWN_CODES: AuthErrorCode[] = [
@@ -56,17 +58,22 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
     
   }
 
-  
+  const message = body.mensagem ?? body.message;
+
   if (body.code) {
     const code = toAuthErrorCode(body.code, 'UNKNOWN');
-    throw new AuthError(body.message ?? 'Não foi possível concluir a solicitação.', code);
+    throw new AuthError(message ?? 'Não foi possível concluir a solicitação.', code);
   }
 
   if (response.status === 401 || response.status === 403) {
-    throw new AuthError(body.message ?? 'Credenciais inválidas.', 'INVALID_CREDENTIALS');
+    throw new AuthError(message ?? 'Credenciais inválidas.', 'INVALID_CREDENTIALS');
   }
 
-  throw new AuthError(body.message ?? 'Não foi possível concluir a solicitação.', 'UNKNOWN');
+  if (response.status === 404) {
+    throw new AuthError(message ?? 'CPF não cadastrado', 'CPF_NAO_CADASTRADO');
+  }
+
+  throw new AuthError(message ?? 'Não foi possível concluir a solicitação.', 'UNKNOWN');
 }
 
 // O back-end SUSpiro autentica exclusivamente por CPF (11 dígitos).
@@ -78,7 +85,7 @@ function toCpf(identifier: string): string {
 
 export const authService: AuthService = {
   async login(values: Pick<LoginFormValues, 'identifier' | 'password'>) {
-    const { token } = await request<LoginApiResponse>('/auth/login', {
+    const { token, senhaProvisoria } = await request<LoginApiResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({
         cpf: toCpf(values.identifier),
@@ -87,12 +94,12 @@ export const authService: AuthService = {
     });
 
     setToken(token);
+    setSenhaProvisoria(senhaProvisoria);
   },
 
+  // A API gera uma senha provisória e envia para o e-mail do usuário.
+  // CPF não cadastrado responde 404 (AuthError CPF_NAO_CADASTRADO).
   async requestPasswordReset(cpf: string) {
-    // ATENÇÃO: /auth/password/forgot ainda não existe no back-end atual
-    // (o LoginController só expõe POST /auth/login). Essa chamada vai
-    // sempre retornar erro até que esse endpoint seja implementado no back.
     await request('/auth/password/forgot', {
       method: 'POST',
       body: JSON.stringify({ cpf }),

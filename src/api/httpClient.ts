@@ -16,6 +16,7 @@ export class ApiError extends Error {
 
 interface ApiErrorBody {
   message?: string;
+  mensagem?: string;
   code?: string;
 }
 
@@ -58,7 +59,7 @@ export async function authenticatedFetch<T>(path: string, init: RequestInit = {}
   }
 
   throw new ApiError(
-    body.message ?? 'Não foi possível concluir a solicitação.',
+    body.mensagem ?? body.message ?? 'Não foi possível concluir a solicitação.',
     response.status,
     body.code,
   );

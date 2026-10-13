@@ -26,8 +26,28 @@ export function setToken(token: string): void {
 export function clearToken(): void {
   try {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(SENHA_PROVISORIA_KEY);
   } catch {
-    
+
+  }
+}
+
+const SENHA_PROVISORIA_KEY = 'suspiro.auth.senhaProvisoria';
+
+/** Enquanto for true, a API só libera a troca de senha (PATCH /usuarios/me/senha). */
+export function precisaTrocarSenha(): boolean {
+  try {
+    return localStorage.getItem(SENHA_PROVISORIA_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+export function setSenhaProvisoria(provisoria: boolean): void {
+  try {
+    localStorage.setItem(SENHA_PROVISORIA_KEY, String(provisoria));
+  } catch {
+
   }
 }
 
