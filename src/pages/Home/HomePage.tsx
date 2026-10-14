@@ -1,34 +1,98 @@
+// Mostra a página inicial do sistema.
+
+import { MaterialIcon, type MaterialIconName } from '../../components/icons';
+import { Notice } from '../../components/ui/Notice';
+import { brand } from '../../config/brand';
+import { canAccessProfessionalDashboard, canCreatePatient, isAdmin } from '../../features/auth/authorization';
+import { perfilLabel } from '../../features/auth/perfil';
 import { getCurrentUser } from '../../features/auth/token';
-import { logout } from '../../features/auth/service';
+import '../../components/layout/layout.css';
+import './HomePage.css';
 
 interface HomePageProps {
-  onLogout: () => void;
-  onCadastrarFuncionario: () => void;
+  onNavigate: (path: string) => void;
 }
 
-export function HomePage({ onLogout, onCadastrarFuncionario }: HomePageProps) {
-  const user = getCurrentUser();
-  const isAdmin = user?.perfil === 'ADMIN' || user?.perfil === 'SUPER_ADMIN';
+interface HomeAction {
+  path: string;
+  icon: MaterialIconName;
+  title: string;
+  text: string;
+}
 
-  const handleLogout = () => {
-    logout();
-    onLogout();
-  };
+export function HomePage({ onNavigate }: HomePageProps) {
+  const perfil = getCurrentUser()?.perfil;
+
+  const actions: HomeAction[] = [];
+
+  if (canAccessProfessionalDashboard(perfil)) {
+    actions.push({
+      path: '/dashboard',
+      icon: 'dashboard',
+      title: 'Dashboard profissional',
+      text: 'Acompanhe consultas, exames, encaminhamentos e pendências da unidade.',
+    });
+  }
+
+  if (canCreatePatient(perfil)) {
+    actions.push({
+      path: '/cadastro-cidadao',
+      icon: 'person_add',
+      title: 'Cadastrar cidadão',
+      text: 'Registre um novo cidadão com CPF, data de nascimento e Cartão Nacional de Saúde.',
+    });
+  }
+
+  if (isAdmin(perfil)) {
+    actions.push({
+      path: '/cadastro-funcionario',
+      icon: 'group',
+      title: 'Cadastrar funcionário',
+      text: 'Crie o acesso de um novo profissional e defina o perfil dele no sistema.',
+    });
+  }
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>Bem-vindo(a) ao SUSpiro</h1>
-      {user && <p>CPF autenticado: {user.sub}</p>}
-      {user?.perfil && <p>Perfil: {user.perfil}</p>}
+    <div className="page">
+      <header className="page__header">
+        <h1 className="page__title">Bem-vindo(a) ao {brand.name}</h1>
+        <p className="page__description">
+          Você está acessando como {perfilLabel(perfil)}. Escolha o que deseja fazer.
+        </p>
+      </header>
 
-      {isAdmin && (
-        <button onClick={onCadastrarFuncionario} style={{ marginRight: '0.5rem' }}>
-          Cadastrar funcionário
-        </button>
+      {actions.length === 0 ? (
+        <Notice variant="info">
+          Seu perfil ainda não tem ações disponíveis neste sistema. Procure o administrador da sua
+          unidade.
+        </Notice>
+      ) : (
+        <ul className="action-grid">
+          {actions.map((action) => (
+            <li key={action.path}>
+              <a
+                className="action-card"
+                href={action.path}
+                onClick={(event) => {
+                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+                  event.preventDefault();
+                  onNavigate(action.path);
+                }}
+              >
+                <span className="action-card__icon">
+                  <MaterialIcon name={action.icon} size={24} />
+                </span>
+                <span className="action-card__title">{action.title}</span>
+                <span className="action-card__text">{action.text}</span>
+                <span className="action-card__cta">
+                  Abrir <MaterialIcon name="arrow_forward" size={16} />
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
       )}
-
-      <button onClick={handleLogout}>Sair</button>
-    </main>
+    </div>
   );
 }
 

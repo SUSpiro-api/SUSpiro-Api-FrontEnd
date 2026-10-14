@@ -1,8 +1,10 @@
+// Mostra e valida o formulário de recuperação de senha.
+
 import { useState } from 'react';
 import { validateResetCpf } from '../../features/auth/validation';
 import { getPasswordResetErrorMessage } from '../../features/auth/errorMessages';
-import { Button } from '../../components/ui/Button';
-import { TextField } from '../../components/ui/TextField';
+import { Button } from '../../components/Login/ui/Button';
+import { TextField } from '../../components/Login/ui/TextField';
 import { formatCpf } from '../../utils/cpf';
 
 interface ForgotPasswordFormProps {
@@ -43,7 +45,7 @@ export function ForgotPasswordForm({ onBack, onSubmit }: ForgotPasswordFormProps
           Esqueceu sua senha?
         </h1>
         <p className="login-login-form__subtitle">
-          Informe seu CPF. Enviaremos uma senha provisória para o e-mail cadastrado.
+          Informe seu CPF. Se ele estiver cadastrado, enviaremos as instruções para o e-mail associado.
         </p>
       </header>
 

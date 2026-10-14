@@ -1,49 +1,42 @@
-import { TextField } from '../ui/TextField';
-import { PasswordField } from '../ui/PasswordField';
-import { Toggle } from '../ui/Toggle';
-import { Button } from '../ui/Button';
-import { MaterialIcon } from '../icons';
-import { GovBrButton } from './GovBrButton';
-import type { LoginFormProps } from './types';
+// Mostra os campos e botões do formulário de login.
+
 import { useState } from 'react';
-import { getCpfError } from '../../utils/cpf';
+import { getLoginErrorMessage } from '../../features/auth/errorMessages';
+import { TextField } from './ui/TextField';
+import { PasswordField } from './ui/PasswordField';
+import { Toggle } from './ui/Toggle';
+import { Button } from './ui/Button';
+import { MaterialIcon } from '../icons';
+import type { LoginFormProps } from './types';
+import type { LoginFieldErrors } from '../../features/auth/useLoginForm';
+import { formatCpf } from '../../utils/cpf';
 
-{
-  /* Formulário de autenticação.
-   */
+interface Props extends LoginFormProps {
+  fieldErrors: LoginFieldErrors;
 }
-export function LoginForm({ values, onChange, onSubmit, onForgotPassword }: LoginFormProps) {
-  const [fieldErrors, setFieldErrors] = useState<{ cpf?: string; senha?: string }>({});
+
+export function LoginForm({
+  values,
+  fieldErrors,
+  onChange,
+  onSubmit,
+  onForgotPassword,
+  onCreateAccount,
+}: Props) {
   const [formError, setFormError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async () => {
-    const errors: { cpf?: string; senha?: string } = {};
-    const cpfError = getCpfError(values.cpf);
-
-    if (cpfError) {
-      errors.cpf = cpfError;
-    }
-
-    if (!values.senha.trim()) {
-      errors.senha = 'Informe sua senha.';
-    }
-
-    setFieldErrors(errors);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setFormError('');
-
-    if (Object.keys(errors).length > 0) {
-      return;
-    }
+    setIsSubmitting(true);
 
     try {
       await onSubmit(values);
     } catch (error) {
-      const message = error instanceof Error ? error.message.toLowerCase() : '';
-      setFormError(
-        message.includes('credencial') || message.includes('senha') || message.includes('cpf')
-          ? 'CPF ou senha inválidos. Confira seus dados e tente novamente.'
-          : 'Não foi possível conectar ao serviço. Tente novamente em instantes.',
-      );
+      setFormError(getLoginErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -58,60 +51,52 @@ export function LoginForm({ values, onChange, onSubmit, onForgotPassword }: Logi
         </p>
       </header>
 
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          void handleSubmit();
-        }}
-        noValidate
-        aria-label="Formulário de autenticação"
-      >
+      <form onSubmit={handleSubmit} noValidate aria-label="Formulário de autenticação">
         <TextField
-          label="E-mail ou CPF"
+          label="CPF"
           placeholder="000.000.000-00"
           autoComplete="username"
+          inputMode="numeric"
+          maxLength={14}
           required
           aria-invalid={Boolean(fieldErrors.cpf)}
+          aria-describedby={fieldErrors.cpf ? 'login-cpf-error' : undefined}
           startIcon={<MaterialIcon name="person" size={18} />}
           value={values.cpf}
-          onChange={(e) => {
-            const nextValue = e.target.value;
-            onChange('cpf', nextValue);
-            if (fieldErrors.cpf) {
-              setFieldErrors((previous) => ({ ...previous, cpf: undefined }));
-            }
-          }}
+          onChange={(event) => onChange('cpf', formatCpf(event.target.value))}
         />
-        {fieldErrors.cpf && <p className="login-field__error">{fieldErrors.cpf}</p>}
+        {fieldErrors.cpf && (
+          <p id="login-cpf-error" className="login-field__error" role="alert">
+            {fieldErrors.cpf}
+          </p>
+        )}
 
         <PasswordField
-          label="Senha de Acesso"
-          placeholder="••••••••••••"
+          label="Senha de acesso"
+          placeholder="Digite sua senha"
           autoComplete="current-password"
           required
-          aria-invalid={Boolean(fieldErrors.senha)}
-          value={values.senha}
-          onChange={(e) => {
-            onChange('senha', e.target.value);
-            if (fieldErrors.senha) {
-              setFieldErrors((previous) => ({ ...previous, senha: undefined }));
-            }
-          }}
+          aria-invalid={Boolean(fieldErrors.password)}
+          aria-describedby={fieldErrors.password ? 'login-password-error' : undefined}
+          value={values.password}
+          onChange={(event) => onChange('password', event.target.value)}
         />
-        {fieldErrors.senha && <p className="login-field__error">{fieldErrors.senha}</p>}
+        {fieldErrors.password && (
+          <p id="login-password-error" className="login-field__error" role="alert">
+            {fieldErrors.password}
+          </p>
+        )}
 
-        <nav
-          className="login-login-form__row login-login-form__row--end"
-          aria-label="Ações de autenticação"
-        >
+        <div className="login-login-form__row login-login-form__row--end">
           <button
             type="button"
             className="login-link login-link--button"
             onClick={onForgotPassword}
+            disabled={!onForgotPassword || isSubmitting}
           >
             Esqueceu a senha?
           </button>
-        </nav>
+        </div>
 
         {formError && (
           <p className="login-form-error" role="alert">
@@ -124,25 +109,40 @@ export function LoginForm({ values, onChange, onSubmit, onForgotPassword }: Logi
           aria-label="Opções de sessão"
         >
           <Toggle
-            label="Lembrar dados de acesso"
-            checked={values.lembrar}
-            onChange={(v) => onChange('lembrar', v)}
+            label="Lembrar CPF"
+            checked={values.rememberCpf}
+            onChange={(checked) => onChange('rememberCpf', checked)}
+            disabled={isSubmitting}
           />
         </section>
 
-        <Button type="submit" variant="primary" className="login-login-form__submit">
-          Entrar
+        <Button
+          type="submit"
+          variant="primary"
+          className="login-login-form__submit"
+          disabled={isSubmitting}
+          aria-busy={isSubmitting}
+        >
+          {isSubmitting ? 'Entrando...' : 'Entrar'}
         </Button>
 
-        <div className="login-divider" aria-label="Separador entre formas de acesso">
-          <span>OU</span>
-        </div>
+        {onCreateAccount && (
+          <p className="login-login-form__footer-note">
+            Ainda não tem uma conta?{' '}
+            <button
+              type="button"
+              className="login-link login-link--button"
+              onClick={onCreateAccount}
+              disabled={isSubmitting}
+            >
+              Criar conta
+            </button>
+          </p>
+        )}
 
-        <GovBrButton />
-
-        <footer className="login-login-form__footer-note">
-          Ambiente restrito e seguro, ministério da saúde
-        </footer>
+        <p className="login-login-form__footer-note">
+          Ambiente restrito e seguro do SUSpiro.
+        </p>
       </form>
     </article>
   );

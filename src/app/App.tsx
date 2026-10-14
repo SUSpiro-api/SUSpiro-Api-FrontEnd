@@ -1,118 +1,112 @@
-import { useEffect, useState } from 'react';
-import { ForgotPasswordFeature, LoginFeature } from '../features/auth';
-import { hasValidSession, getCurrentUser, precisaTrocarSenha } from '../features/auth/token';
-import { logout } from '../features/auth/service';
+// Escolhe a tela e mostra o menu principal do sistema.
+
+import { Suspense, type ReactNode } from 'react';
+import { AppShell } from '../components/layout/AppShell';
+import { AppErrorBoundary } from '../components/system/AppErrorBoundary';
+import {
+  canCreateAdmin,
+  canCreatePatient,
+  isAdmin,
+  canAccessProfessionalDashboard,
+} from '../features/auth/authorization';
 import { TrocaSenhaPage } from '../features/auth/password-change/TrocaSenhaPage';
-import { HomePage } from '../pages/Home/HomePage';
-import { CadastroFuncionarioPage } from '../features/employees/CadastroFuncionarioPage';
-import { getCurrentPath, navigate } from './navigation';
+import {
+  LazyCadastroCidadaoPage,
+  LazyCadastroFuncionarioPage,
+  LazyDashboardPage,
+  LazyUnauthorizedPage,
+  InitialForgotPasswordFeature,
+  InitialHomePage,
+  InitialLoginFeature,
+  resolveRoute,
+} from './routes';
+import { useAppController } from './useAppController';
+import type { AuthUser } from '../features/auth/types';
 import '../styles/global.css';
 
-type Route = '/' | '/login' | '/recuperar-senha' | '/criar-conta' | '/cadastro-funcionario';
-
-function resolveRoute(pathname: string): Route {
-  if (pathname === '/recuperar-senha') return '/recuperar-senha';
-  if (pathname === '/criar-conta') return '/criar-conta';
-  if (pathname === '/cadastro-funcionario') return '/cadastro-funcionario';
-  if (pathname === '/login') return '/login';
-  return '/';
+function PageLoading() {
+  return <div className="page-loading" role="status" aria-live="polite">Carregando…</div>;
 }
 
 export default function App() {
-  const [route, setRoute] = useState<Route>(resolveRoute(getCurrentPath()));
-  const [isAuthenticated, setIsAuthenticated] = useState(() => hasValidSession());
-  const [senhaProvisoria, setSenhaProvisoria] = useState(() => precisaTrocarSenha());
+  const app = useAppController();
+  const { route, user, needsPasswordChange, isCheckingSession } = app;
 
-  useEffect(() => {
-    const handlePopState = () => setRoute(resolveRoute(getCurrentPath()));
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  if (isCheckingSession) return <PageLoading />;
 
-  const goToLogin = () => {
-    navigate('/login');
-    setRoute('/login');
-  };
-
-  const goToForgotPassword = () => {
-    navigate('/recuperar-senha');
-    setRoute('/recuperar-senha');
-  };
-
-  const goToCreateAccount = () => {
-    navigate('/criar-conta');
-    setRoute('/criar-conta');
-  };
-
-  const goToHome = () => {
-    navigate('/');
-    setRoute('/');
-  };
-
-  const goToCadastroFuncionario = () => {
-    navigate('/cadastro-funcionario');
-    setRoute('/cadastro-funcionario');
-  };
-
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true);
-    setSenhaProvisoria(precisaTrocarSenha());
-    goToHome();
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    goToLogin();
-  };
-
-  // "Criar conta" acessível a partir da tela pública de login, sem exigir
-  // sessão ativa. IMPORTANTE: o backend (POST /usuarios) hoje exige um
-  // token de ADMIN/SUPER_ADMIN válido para aceitar o cadastro. Enquanto
-  // essa regra não for alterada no backend, o formulário abre normalmente,
-  // mas o envio retorna "Você não tem permissão para realizar essa ação."
-  // Isso é esperado nesta etapa (só front-end) e será resolvido quando o
-  // backend for ajustado para permitir esse fluxo público.
-  if (route === '/criar-conta' && !isAuthenticated) {
-    return <CadastroFuncionarioPage podeCriarAdmin={false} onVoltar={goToLogin} />;
-  }
-
-  if (route === '/recuperar-senha') {
-    return <ForgotPasswordFeature onBack={goToLogin} />;
-  }
-
-  if (isAuthenticated && senhaProvisoria) {
+  function renderInShell(page: ReactNode) {
     return (
-      <TrocaSenhaPage
-        onConcluido={() => setSenhaProvisoria(false)}
-        onSair={() => {
-          logout();
-          handleLogout();
-        }}
-      />
+      <AppShell
+        current={route}
+        user={user}
+        onNavigate={(path) => app.goTo(resolveRoute(path))}
+        onLogout={app.logout}
+      >
+        {page}
+      </AppShell>
     );
   }
 
-  if (isAuthenticated) {
-    const user = getCurrentUser();
-    const isAdmin = user?.perfil === 'ADMIN' || user?.perfil === 'SUPER_ADMIN';
+  function renderPage() {
+    if (route === '/recuperar-senha') {
+      return <InitialForgotPasswordFeature onBack={() => app.goTo('/login')} />;
+    }
 
-    if (route === '/cadastro-funcionario' && isAdmin) {
+    // A criação de conta não permite criar administradores.
+    if (route === '/criar-conta' && !user) {
+      return <LazyCadastroFuncionarioPage podeCriarAdmin={false} onVoltar={() => app.goTo('/login')} />;
+    }
+
+    if (!user) {
       return (
-        <CadastroFuncionarioPage
-          podeCriarAdmin={user?.perfil === 'SUPER_ADMIN'}
-          onVoltar={goToHome}
+        <InitialLoginFeature
+          onForgotPassword={() => app.goTo('/recuperar-senha')}
+          onCreateAccount={() => app.goTo('/criar-conta')}
+          onLoginSuccess={app.handleLoginSuccess}
         />
       );
     }
 
-    return <HomePage onLogout={handleLogout} onCadastrarFuncionario={goToCadastroFuncionario} />;
+    if (needsPasswordChange) {
+      return (
+        <TrocaSenhaPage
+          onConcluido={app.finishPasswordChange}
+          onSair={app.logout}
+        />
+      );
+    }
+
+    const profile = user.perfil;
+
+    if (route === '/cadastro-funcionario') {
+      const page = isAdmin(profile)
+        ? <LazyCadastroFuncionarioPage podeCriarAdmin={canCreateAdmin(profile)} onVoltar={() => app.goTo('/')} />
+        : <LazyUnauthorizedPage onBack={() => app.goTo('/')} />;
+      return renderInShell(page);
+    }
+
+    if (route === '/dashboard') {
+      const page = canAccessProfessionalDashboard(profile)
+        ? <LazyDashboardPage user={user} />
+        : <LazyUnauthorizedPage onBack={() => app.goTo('/')} />;
+      return renderInShell(page);
+    }
+
+    if (route === '/cadastro-cidadao') {
+      const page = canCreatePatient(profile)
+        ? <LazyCadastroCidadaoPage onVoltar={() => app.goTo('/')} />
+        : <LazyUnauthorizedPage onBack={() => app.goTo('/')} />;
+      return renderInShell(page);
+    }
+
+    return renderInShell(
+      <InitialHomePage onNavigate={(path) => app.goTo(resolveRoute(path))} />,
+    );
   }
 
   return (
-    <LoginFeature
-      onForgotPassword={goToForgotPassword}
-      onCreateAccount={goToCreateAccount}
-      onLoginSuccess={handleLoginSuccess}
-    />
+    <AppErrorBoundary>
+      <Suspense fallback={<PageLoading />}>{renderPage()}</Suspense>
+    </AppErrorBoundary>
   );
 }

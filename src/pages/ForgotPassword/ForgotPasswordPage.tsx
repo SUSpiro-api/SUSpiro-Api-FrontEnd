@@ -1,3 +1,5 @@
+// Monta a página de recuperação de senha.
+
 import { useState } from 'react';
 import { authService as defaultAuthService } from '../../features/auth/service';
 import type { AuthService } from '../../features/auth/types';

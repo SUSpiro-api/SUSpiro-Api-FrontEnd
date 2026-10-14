@@ -1,3 +1,5 @@
+// Mostra a confirmação do pedido de recuperação de senha.
+
 import { MaterialIcon } from '../../components/icons';
 
 interface ForgotPasswordSuccessProps {
@@ -20,7 +22,7 @@ export function ForgotPasswordSuccess({ onBack }: ForgotPasswordSuccessProps) {
             Verifique seu e-mail
           </p>
           <p className="login-success-card__text">
-            Enviamos uma senha provisória para o e-mail cadastrado. Entre com ela e cadastre uma nova senha.
+            Se o CPF estiver cadastrado, as instruções de redefinição foram enviadas para o e-mail associado.
           </p>
         </div>
       </div>

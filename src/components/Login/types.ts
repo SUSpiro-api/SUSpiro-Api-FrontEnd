@@ -1,3 +1,5 @@
+// Define os tipos usados pelos componentes de login.
+
 import type { AuthService, LoginFormValues } from '../../features/auth/types';
 
 export type { LoginFormValues };
@@ -8,12 +10,10 @@ export interface LoginFormProps {
   onSubmit: (values: LoginFormValues) => void | Promise<void>;
   onForgotPassword?: () => void;
   onCreateAccount?: () => void;
-  isSubmitting?: boolean;
-  formError?: string;
 }
 
 export interface LoginProps {
-  onLogin?: (values: Pick<LoginFormValues, 'identifier' | 'password'>) => void | Promise<void>;
+  onLogin?: (values: Pick<LoginFormValues, 'cpf' | 'password'>) => void | Promise<void>;
   onForgotPassword?: () => void;
   onCreateAccount?: () => void;
   authService?: AuthService;

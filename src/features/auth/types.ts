@@ -1,11 +1,29 @@
+// Define os tipos usados no login e nos dados do usuário.
+
+export type PerfilUsuario =
+  | 'SUPER_ADMIN'
+  | 'ADMIN'
+  | 'MEDICO'
+  | 'ENFERMEIRO'
+  | 'RECEPCIONISTA'
+  | 'USUARIO';
+
+export interface AuthUser {
+  sub: string;
+  nome?: string;
+  perfil?: PerfilUsuario;
+}
+
 export interface LoginFormValues {
-  identifier: string;
+  cpf: string;
   password: string;
-  rememberIdentifier: boolean;
+  rememberCpf: boolean;
 }
 
 export interface AuthService {
-  login(values: Pick<LoginFormValues, 'identifier' | 'password'>): Promise<void>;
+  login(values: Pick<LoginFormValues, 'cpf' | 'password'>): Promise<AuthUser>;
+  restoreSession(): Promise<AuthUser | null>;
+  logout(): Promise<void>;
   requestPasswordReset(cpf: string): Promise<void>;
 }
 
@@ -17,6 +35,8 @@ export type AuthErrorCode =
   | 'DADOS_INVALIDOS'
   | 'NETWORK'
   | 'NOT_CONFIGURED'
+  | 'SESSAO_EXPIRADA'
+  | 'NOT_AVAILABLE'
   | 'UNKNOWN';
 
 export class AuthError extends Error {

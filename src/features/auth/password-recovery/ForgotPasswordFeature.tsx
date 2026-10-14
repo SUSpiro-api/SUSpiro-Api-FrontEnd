@@ -1,3 +1,5 @@
+// Mostra o formulário para pedir a recuperação de senha.
+
 import { ForgotPasswordPage } from '../../../pages/ForgotPassword/ForgotPasswordPage';
 
 interface ForgotPasswordFeatureProps {

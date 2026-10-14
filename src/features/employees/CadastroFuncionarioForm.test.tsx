@@ -92,7 +92,7 @@ describe('CadastroFuncionarioForm', () => {
       id: 1,
       nome: 'Maria da Silva',
       cpf: '52998224725',
-      perfil: 'USUARIO',
+      perfil: 'RECEPCIONISTA',
       ativo: true,
     });
 
@@ -122,6 +122,20 @@ describe('CadastroFuncionarioForm', () => {
     );
 
     expect(screen.queryByText('Administrador')).not.toBeInTheDocument();
+  });
+
+  it('shows the professional access profiles', () => {
+    render(
+      <CadastroFuncionarioForm
+        podeCriarAdmin={false}
+        onSucesso={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Recepcionista')).toBeInTheDocument();
+    expect(screen.getByText('Enfermeiro')).toBeInTheDocument();
+    expect(screen.getByText('Médico')).toBeInTheDocument();
   });
 
   it('shows the "Administrador" option when podeCriarAdmin is true', () => {

@@ -1,7 +1,9 @@
+// Reúne os componentes que podem ser importados desta pasta.
+
 export { Login } from './Login';
 export { BrandPanel } from './Login/BrandPanel';
-export { LoginForm } from './form/LoginForm';
-export { GovBrButton } from './button/GovBrButton';
+export { AppShell } from './layout/AppShell';
+export { LoginForm } from './Login/LoginForm';
 export { Button } from './ui/Button';
 export { TextField } from './ui/TextField';
 export { PasswordField } from './ui/PasswordField';

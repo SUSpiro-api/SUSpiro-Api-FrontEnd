@@ -1,17 +1,23 @@
+// Controla a tela de login e o envio dos dados para autenticar.
+
 import { LoginPage } from '../../../pages/Login/LoginPage';
 import { authService } from '../service';
-import type { LoginFormValues } from '../types';
+import type { AuthUser, LoginFormValues } from '../types';
 
 interface LoginFeatureProps {
   onForgotPassword: () => void;
   onCreateAccount?: () => void;
-  onLoginSuccess: () => void;
+  onLoginSuccess: (user: AuthUser) => void;
 }
 
-export function LoginFeature({ onForgotPassword, onCreateAccount, onLoginSuccess }: LoginFeatureProps) {
-  const handleLogin = async (values: Pick<LoginFormValues, 'identifier' | 'password'>) => {
-    await authService.login(values);
-    onLoginSuccess();
+export function LoginFeature({
+  onForgotPassword,
+  onCreateAccount,
+  onLoginSuccess,
+}: LoginFeatureProps) {
+  const handleLogin = async (values: Pick<LoginFormValues, 'cpf' | 'password'>) => {
+    const user = await authService.login(values);
+    onLoginSuccess(user);
   };
 
   return (

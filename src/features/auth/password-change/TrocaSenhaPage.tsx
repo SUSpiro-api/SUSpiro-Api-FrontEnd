@@ -1,4 +1,6 @@
-import { useState } from 'react';
+// Pede para trocar a senha quando isso é necessário.
+
+import { useState, type FormEvent } from 'react';
 import { BrandPanel } from '../../../components/Login/BrandPanel';
 import { PasswordField } from '../../../components/ui/PasswordField';
 import { Button } from '../../../components/ui/Button';
@@ -11,7 +13,6 @@ interface TrocaSenhaPageProps {
   onSair: () => void;
 }
 
-/** Primeiro acesso ou senha redefinida: a API só libera o sistema após a troca. */
 export function TrocaSenhaPage({ onConcluido, onSair }: TrocaSenhaPageProps) {
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
@@ -19,12 +20,13 @@ export function TrocaSenhaPage({ onConcluido, onSair }: TrocaSenhaPageProps) {
   const [erro, setErro] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!senhaAtual) return setErro('Informe a senha provisória recebida por e-mail.');
     if (novaSenha.length < 8) return setErro('A nova senha deve ter pelo menos 8 caracteres.');
     if (novaSenha !== confirmacao) return setErro('As senhas não coincidem.');
+    if (novaSenha === senhaAtual) return setErro('A nova senha precisa ser diferente da senha provisória.');
 
     setErro('');
     setIsSubmitting(true);
@@ -32,6 +34,7 @@ export function TrocaSenhaPage({ onConcluido, onSair }: TrocaSenhaPageProps) {
       await authenticatedFetch<void>('/usuarios/me/senha', {
         method: 'PATCH',
         body: JSON.stringify({ senhaAtual, novaSenha }),
+        retries: 0,
       });
       setSenhaProvisoria(false);
       onConcluido();
@@ -49,12 +52,9 @@ export function TrocaSenhaPage({ onConcluido, onSair }: TrocaSenhaPageProps) {
         <section className="login-form-panel" aria-label="Formulário de troca de senha">
           <article className="login-login-form" aria-labelledby="troca-senha-title">
             <header>
-              <h1 id="troca-senha-title" className="login-login-form__title">
-                Cadastre sua nova senha
-              </h1>
+              <h1 id="troca-senha-title" className="login-login-form__title">Cadastre sua nova senha</h1>
               <p className="login-login-form__subtitle">
-                Você entrou com uma senha provisória. Defina uma senha pessoal para liberar o
-                acesso ao sistema.
+                Você entrou com uma senha provisória. Defina uma senha pessoal para liberar o acesso ao sistema.
               </p>
             </header>
 
@@ -62,6 +62,7 @@ export function TrocaSenhaPage({ onConcluido, onSair }: TrocaSenhaPageProps) {
               <PasswordField
                 label="Senha provisória"
                 autoComplete="current-password"
+                required
                 value={senhaAtual}
                 onChange={(event) => setSenhaAtual(event.target.value)}
               />
@@ -69,31 +70,23 @@ export function TrocaSenhaPage({ onConcluido, onSair }: TrocaSenhaPageProps) {
                 label="Nova senha"
                 placeholder="Mínimo 8 caracteres"
                 autoComplete="new-password"
+                required
                 value={novaSenha}
                 onChange={(event) => setNovaSenha(event.target.value)}
               />
               <PasswordField
                 label="Confirmar nova senha"
                 autoComplete="new-password"
+                required
                 value={confirmacao}
                 onChange={(event) => setConfirmacao(event.target.value)}
               />
 
-              {erro && (
-                <p className="login-form-error" role="alert">
-                  {erro}
-                </p>
-              )}
+              {erro && <p className="login-form-error" role="alert">{erro}</p>}
 
-              <Button
-                type="submit"
-                variant="primary"
-                className="login-login-form__submit"
-                disabled={isSubmitting}
-              >
+              <Button type="submit" variant="primary" fullWidth className="login-login-form__submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Salvando...' : 'Salvar nova senha'}
               </Button>
-
               <button
                 type="button"
                 className="login-link login-link--button login-link--back"

@@ -1,3 +1,5 @@
+// Formata, limpa e confere se um CPF é válido.
+
 const CPF_LENGTH = 11;
 
 export function normalizeCpf(value: string): string {

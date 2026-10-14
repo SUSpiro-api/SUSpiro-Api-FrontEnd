@@ -1,25 +1,27 @@
-const REMEMBERED_IDENTIFIER_KEY = 'suspiro.auth.rememberedIdentifier';
+// Lembra o CPF informado durante a sessão, sem salvar a senha.
 
-export function getRememberedIdentifier(): string {
+const REMEMBERED_CPF_KEY = 'suspiro.ui.rememberedCpf';
+
+export function getRememberedCpf(): string {
   try {
-    return localStorage.getItem(REMEMBERED_IDENTIFIER_KEY) ?? '';
+    return sessionStorage.getItem(REMEMBERED_CPF_KEY) ?? '';
   } catch {
     return '';
   }
 }
 
-export function saveRememberedIdentifier(identifier: string): void {
+export function saveRememberedCpf(cpf: string): void {
   try {
-    localStorage.setItem(REMEMBERED_IDENTIFIER_KEY, identifier);
+    sessionStorage.setItem(REMEMBERED_CPF_KEY, cpf);
   } catch {
-    
+
   }
 }
 
-export function clearRememberedIdentifier(): void {
+export function clearRememberedCpf(): void {
   try {
-    localStorage.removeItem(REMEMBERED_IDENTIFIER_KEY);
+    sessionStorage.removeItem(REMEMBERED_CPF_KEY);
   } catch {
-    
+
   }
 }

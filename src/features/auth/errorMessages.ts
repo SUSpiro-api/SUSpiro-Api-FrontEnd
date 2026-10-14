@@ -1,14 +1,12 @@
-import { AuthError } from './types';
+// Transforma erros de autenticação em mensagens fáceis de entender.
 
-//Centraliza todas as menssagens de erro//
+import { AuthError } from './types';
 
 const GENERIC_CONNECTION_MESSAGE =
   'Não foi possível conectar ao serviço. Tente novamente em instantes.';
 
-/** Códigos de `AuthError` que representam falha de conectividade/infra, não do usuário. */
 const CONNECTION_ERROR_CODES = new Set<string>(['NETWORK', 'NOT_CONFIGURED']);
 
-/** Códigos específicos que o backend já manda com uma mensagem pronta em português. */
 const SPECIFIC_MESSAGE_CODES = new Set<string>([
   'CPF_NAO_CADASTRADO',
   'SENHA_INCORRETA',
@@ -45,14 +43,13 @@ function looksLikeInvalidCredentials(error: unknown): boolean {
 }
 
 export function getLoginErrorMessage(error: unknown): string {
-  // O backend já manda uma mensagem específica e pronta para exibir
-  // (ex: "Este CPF ainda não está cadastrado...", "Senha incorreta.").
+
   if (error instanceof AuthError && SPECIFIC_MESSAGE_CODES.has(error.code) && error.message) {
     return error.message;
   }
 
   if (looksLikeInvalidCredentials(error)) {
-    return 'CPF/e-mail ou senha inválidos. Confira seus dados e tente novamente.';
+    return 'CPF ou senha inválidos. Confira seus dados e tente novamente.';
   }
 
   if (looksLikeConnectionError(error)) {
@@ -62,10 +59,9 @@ export function getLoginErrorMessage(error: unknown): string {
   return 'Não foi possível concluir o acesso. Tente novamente.';
 }
 
-/** Mensagem de erro para exibir após uma falha ao solicitar troca  de senha. */
 export function getPasswordResetErrorMessage(error: unknown): string {
-  if (error instanceof AuthError && error.code === 'CPF_NAO_CADASTRADO') {
-    return 'CPF não cadastrado. Confira o número digitado.';
+  if (error instanceof AuthError && error.code === 'NOT_AVAILABLE') {
+    return 'A recuperação de senha por e-mail ainda não está disponível. Procure o administrador da sua unidade para redefinir sua senha.';
   }
 
   return looksLikeConnectionError(error)

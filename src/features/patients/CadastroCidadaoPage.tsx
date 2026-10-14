@@ -1,29 +1,43 @@
-import { CadastroCidadaoForm } from './CadastroCidadaoForm';
-import './patients.css';
+// Monta a página de cadastro de cidadão.
 
-export function CadastroCidadaoPage() {
+import { useState } from 'react';
+import { ConfirmationPanel } from '../../components/ui/ConfirmationPanel';
+import { maskCns, maskCpf } from '../../utils/mask';
+import { CadastroCidadaoForm } from './CadastroCidadaoForm';
+import type { PacienteCriado } from './service';
+import '../../components/layout/layout.css';
+
+interface CadastroCidadaoPageProps {
+  onVoltar: () => void;
+}
+
+export function CadastroCidadaoPage({ onVoltar }: CadastroCidadaoPageProps) {
+  const [criado, setCriado] = useState<PacienteCriado | null>(null);
+
   return (
-    <main className="patient-page">
-      <header className="patient-page__header">
-        <div>
-          <p className="patient-page__eyebrow">Cadastro de Cidadão</p>
-          <h1 className="patient-page__title">Dados do cidadão</h1>
-          <p className="patient-page__subtitle">
-            Localize ou cadastre um cidadão para manter seus dados atualizados.
-          </p>
-        </div>
+    <div className="page">
+      <header className="page__header">
+        <h1 className="page__title">Cadastrar cidadão</h1>
+        {!criado && <p className="page__description">Todos os campos são obrigatórios, exceto o telefone.</p>}
       </header>
 
-      <section className="patient-page__content">
-        <CadastroCidadaoForm
-          onSucesso={() => {
-            console.info('Cidadão cadastrado com sucesso.');
-          }}
-          onCancelar={() => {
-            console.info('Cadastro cancelado.');
-          }}
-        />
-      </section>
-    </main>
+      <div className="card">
+        {criado ? (
+          <ConfirmationPanel
+            title="Cidadão cadastrado com sucesso"
+            description="Os dados foram registrados no sistema."
+            details={[
+              { label: 'Nome', value: criado.nome },
+              { label: 'CPF', value: maskCpf(criado.cpf) },
+              { label: 'CNS', value: maskCns(criado.numeroSus) },
+            ].filter((detail) => detail.value)}
+            primaryAction={{ label: 'Cadastrar outro cidadão', onClick: () => setCriado(null) }}
+            secondaryAction={{ label: 'Voltar ao início', onClick: onVoltar }}
+          />
+        ) : (
+          <CadastroCidadaoForm onSucesso={setCriado} onCancelar={onVoltar} />
+        )}
+      </div>
+    </div>
   );
-}     
+}

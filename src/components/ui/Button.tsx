@@ -1,19 +1,32 @@
+// Cria um botão com os estilos padrão do sistema.
+
 import type { ButtonHTMLAttributes } from 'react';
 import './ui.css';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'ghost';
+  fullWidth?: boolean;
 }
 
 export function Button({
   variant = 'primary',
+  fullWidth = false,
   className,
   children,
+  type = 'button',
   ...rest
 }: ButtonProps) {
   return (
     <button
-      className={['login-button', `login-button--${variant}`, className].filter(Boolean).join(' ')}
+      type={type}
+      className={[
+        'ui-button',
+        `ui-button--${variant}`,
+        fullWidth && 'ui-button--full',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       {...rest}
     >
       {children}

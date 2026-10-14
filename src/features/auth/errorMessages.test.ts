@@ -2,9 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { AuthError } from './types';
 import { getLoginErrorMessage, getPasswordResetErrorMessage } from './errorMessages';
 
-
-
-
 describe('getLoginErrorMessage', () => {
   it('recognizes invalid credentials via AuthError code', () => {
     const error = new AuthError('Credenciais inválidas.', 'INVALID_CREDENTIALS');
@@ -33,11 +30,10 @@ describe('getPasswordResetErrorMessage', () => {
     expect(getPasswordResetErrorMessage(error)).toMatch(/conectar ao serviço/);
   });
 
-  it('informa ao usuário quando o CPF não está cadastrado', () => {
-    const error = new AuthError('CPF não cadastrado', 'CPF_NAO_CADASTRADO');
-    expect(getPasswordResetErrorMessage(error)).toBe(
-      'CPF não cadastrado. Confira o número digitado.',
-    );
+  it('explains when password recovery is not available in the back-end yet', () => {
+    const error = new AuthError('indisponível', 'NOT_AVAILABLE');
+    expect(getPasswordResetErrorMessage(error)).toMatch(/ainda não está disponível/);
+    expect(getPasswordResetErrorMessage(error)).toMatch(/administrador/);
   });
 
   it('returns a generic message otherwise', () => {

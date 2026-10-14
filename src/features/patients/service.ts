@@ -1,3 +1,5 @@
+// Envia os dados de cadastro de cidadão para o backend.
+
 import { authenticatedFetch } from '../../api/httpClient';
 
 export interface CadastroPacienteValues {
@@ -14,7 +16,7 @@ export interface PacienteCriado {
   cpf: string;
   dataNascimento: string;
   numeroSus: string;
-  telefone: string;
+  telefone: string | null;
   criadoEm: string;
 }
 

@@ -1,6 +1,8 @@
+// Envia os dados de cadastro de funcionário para o backend.
+
 import { authenticatedFetch } from '../../api/httpClient';
 
-export type PerfilFuncionario = 'ADMIN' | 'USUARIO';
+export type PerfilFuncionario = 'ADMIN' | 'RECEPCIONISTA' | 'MEDICO' | 'ENFERMEIRO';
 
 export interface CadastroFuncionarioValues {
   nome: string;

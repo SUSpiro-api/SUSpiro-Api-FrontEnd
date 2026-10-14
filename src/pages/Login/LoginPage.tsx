@@ -1,3 +1,5 @@
+// Monta a página de login.
+
 import { Login } from '../../components/Login';
 import type { LoginProps } from '../../components/Login/types';
 

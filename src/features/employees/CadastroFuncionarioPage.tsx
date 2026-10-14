@@ -1,7 +1,12 @@
+// Monta a página de cadastro de funcionário.
+
 import { useState } from 'react';
-import { BrandPanel } from '../../components/Login/BrandPanel';
+import { ConfirmationPanel } from '../../components/ui/ConfirmationPanel';
+import { perfilLabel } from '../auth/perfil';
+import { maskCpf } from '../../utils/mask';
 import { CadastroFuncionarioForm } from './CadastroFuncionarioForm';
-import '../../components/Login/Login.css';
+import type { UsuarioCriado } from './service';
+import '../../components/layout/layout.css';
 
 interface CadastroFuncionarioPageProps {
   podeCriarAdmin: boolean;
@@ -9,41 +14,36 @@ interface CadastroFuncionarioPageProps {
 }
 
 export function CadastroFuncionarioPage({ podeCriarAdmin, onVoltar }: CadastroFuncionarioPageProps) {
-  const [sucesso, setSucesso] = useState(false);
+  const [criado, setCriado] = useState<UsuarioCriado | null>(null);
 
   return (
-    <main className="login-page" aria-label="Cadastro de funcionário do SUSpiro">
-      <section className="login-container" aria-label="Cadastro de funcionário">
-        <BrandPanel />
-        <section className="login-form-panel" aria-label="Formulário de cadastro">
-          {sucesso ? (
-            <article className="login-login-form" aria-live="polite">
-              <header>
-                <h1 className="login-login-form__title">Funcionário cadastrado!</h1>
-                <p className="login-login-form__subtitle">
-                  O acesso foi criado com sucesso. Você pode cadastrar outro funcionário ou voltar.
-                </p>
-              </header>
-              <button
-                type="button"
-                className="login-button login-button--primary login-login-form__submit"
-                onClick={() => setSucesso(false)}
-              >
-                Cadastrar outro
-              </button>
-              <button type="button" className="login-link login-link--button login-link--back" onClick={onVoltar}>
-                Voltar
-              </button>
-            </article>
-          ) : (
-            <CadastroFuncionarioForm
-              podeCriarAdmin={podeCriarAdmin}
-              onSucesso={() => setSucesso(true)}
-              onCancelar={onVoltar}
-            />
-          )}
-        </section>
-      </section>
-    </main>
+    <div className="page">
+      <header className="page__header">
+        <h1 className="page__title">Cadastrar funcionário</h1>
+        {!criado && <p className="page__description">Crie o acesso de um novo profissional e defina o perfil dele no sistema.</p>}
+      </header>
+
+      <div className="card">
+        {criado ? (
+          <ConfirmationPanel
+            title="Funcionário cadastrado com sucesso"
+            description="O acesso foi criado. Repasse a senha provisória ao funcionário com segurança."
+            details={[
+              { label: 'Nome', value: criado.nome },
+              { label: 'Perfil', value: perfilLabel(criado.perfil) },
+              { label: 'CPF', value: maskCpf(criado.cpf) },
+            ].filter((detail) => detail.value)}
+            primaryAction={{ label: 'Cadastrar outro funcionário', onClick: () => setCriado(null) }}
+            secondaryAction={{ label: 'Voltar ao início', onClick: onVoltar }}
+          />
+        ) : (
+          <CadastroFuncionarioForm
+            podeCriarAdmin={podeCriarAdmin}
+            onSucesso={setCriado}
+            onCancelar={onVoltar}
+          />
+        )}
+      </div>
+    </div>
   );
 }

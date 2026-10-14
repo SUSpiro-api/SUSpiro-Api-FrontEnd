@@ -1,256 +1,109 @@
-import { useState } from 'react';
-import { ApiError } from '../../api/httpClient';
+// Mostra os campos do cadastro de cidadão.
+
 import { Button } from '../../components/ui/Button';
+import { FormSection } from '../../components/ui/FormSection';
+import { Notice } from '../../components/ui/Notice';
 import { TextField } from '../../components/ui/TextField';
-import { formatCpf } from '../../utils/cpf';
-import {
-  validateCpfPaciente,
-  validateDataNascimento,
-  validateNomePaciente,
-  validateNumeroSus,
-  validateTelefone,
-} from './validation';
-import { cadastrarPaciente } from './service';
+import { maxBirthDate, NOME_MAX_LENGTH } from './validation';
+import { useCadastroCidadaoForm } from './hooks/useCadastroCidadaoForm';
+import type { PacienteCriado } from './service';
 
 interface CadastroCidadaoFormProps {
-  onSucesso: () => void;
+  onSucesso: (paciente: PacienteCriado) => void;
   onCancelar: () => void;
 }
 
-type FieldErrors = Partial<
-  Record<
-    'nome' | 'cpf' | 'dataNascimento' | 'numeroSus' | 'telefone',
-    string
-  >
->;
-
-export function CadastroCidadaoForm({
-  onSucesso,
-  onCancelar,
-}: CadastroCidadaoFormProps) {
-  const [nome, setNome] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [dataNascimento, setDataNascimento] = useState('');
-  const [numeroSus, setNumeroSus] = useState('');
-  const [telefone, setTelefone] = useState('');
-
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [formError, setFormError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const errors: FieldErrors = {
-      nome: validateNomePaciente(nome),
-      cpf: validateCpfPaciente(cpf),
-      dataNascimento: validateDataNascimento(dataNascimento),
-      numeroSus: validateNumeroSus(numeroSus),
-      telefone: validateTelefone(telefone),
-    };
-
-    const cleanErrors = Object.fromEntries(
-      Object.entries(errors).filter(([, value]) => value),
-    ) as FieldErrors;
-
-    setFieldErrors(cleanErrors);
-    setFormError('');
-
-    if (Object.keys(cleanErrors).length > 0) return;
-
-    setIsSubmitting(true);
-
-    try {
-      await cadastrarPaciente({
-        nome,
-        cpf,
-        dataNascimento,
-        numeroSus,
-        telefone,
-      });
-
-      onSucesso();
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setFormError(error.message);
-      } else {
-        setFormError(
-          'Não foi possível cadastrar o cidadão. Tente novamente.',
-        );
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+export function CadastroCidadaoForm({ onSucesso, onCancelar }: CadastroCidadaoFormProps) {
+  const form = useCadastroCidadaoForm(onSucesso);
 
   return (
     <form
-      className="patient-form"
-      onSubmit={handleSubmit}
+      ref={form.formRef}
+      onSubmit={form.handleSubmit}
       noValidate
       aria-label="Formulário de cadastro de cidadão"
     >
-      <div className="patient-form__grid">
-        <div className="patient-form__field patient-form__field--full">
-          <TextField
-            label="Nome completo"
-            placeholder="Digite o nome completo"
-            autoComplete="name"
-            required
-            value={nome}
-            aria-invalid={Boolean(fieldErrors.nome)}
-            onChange={(event) => {
-              setNome(event.target.value);
+      <FormSection title="Dados pessoais">
+        <div className="form-grid">
+          <div className="form-grid__full">
+            <TextField
+              label="Nome completo"
+              placeholder="Digite o nome completo"
+              autoComplete="name"
+              maxLength={NOME_MAX_LENGTH}
+              required
+              error={form.fieldErrors.nome}
+              value={form.nome}
+              onChange={(event) => form.alterarNome(event.target.value)}
+            />
+          </div>
 
-              if (fieldErrors.nome) {
-                setFieldErrors((prev) => ({
-                  ...prev,
-                  nome: undefined,
-                }));
-              }
-            }}
-          />
-
-          {fieldErrors.nome && (
-            <p className="patient-form__error" role="alert">
-              {fieldErrors.nome}
-            </p>
-          )}
-        </div>
-
-        <div className="patient-form__field">
           <TextField
             label="CPF"
             placeholder="000.000.000-00"
             inputMode="numeric"
             maxLength={14}
             required
-            value={cpf}
-            aria-invalid={Boolean(fieldErrors.cpf)}
-            onChange={(event) => {
-              setCpf(formatCpf(event.target.value));
-
-              if (fieldErrors.cpf) {
-                setFieldErrors((prev) => ({
-                  ...prev,
-                  cpf: undefined,
-                }));
-              }
-            }}
+            error={form.fieldErrors.cpf}
+            value={form.cpf}
+            onChange={(event) => form.alterarCpf(event.target.value)}
           />
 
-          {fieldErrors.cpf && (
-            <p className="patient-form__error" role="alert">
-              {fieldErrors.cpf}
-            </p>
-          )}
-        </div>
-
-        <div className="patient-form__field">
           <TextField
             label="Data de nascimento"
             type="date"
+            max={maxBirthDate()}
             required
-            value={dataNascimento}
-            aria-invalid={Boolean(fieldErrors.dataNascimento)}
-            onChange={(event) => {
-              setDataNascimento(event.target.value);
-
-              if (fieldErrors.dataNascimento) {
-                setFieldErrors((prev) => ({
-                  ...prev,
-                  dataNascimento: undefined,
-                }));
-              }
-            }}
+            error={form.fieldErrors.dataNascimento}
+            value={form.dataNascimento}
+            onChange={(event) => form.alterarDataNascimento(event.target.value)}
           />
-
-          {fieldErrors.dataNascimento && (
-            <p className="patient-form__error" role="alert">
-              {fieldErrors.dataNascimento}
-            </p>
-          )}
         </div>
+      </FormSection>
 
-        <div className="patient-form__field">
+      <FormSection
+        title="Cartão Nacional de Saúde"
+        description="O CNS identifica o cidadão no SUS."
+      >
+        <div className="form-grid">
           <TextField
-            label="CNS"
+            label="Número do CNS"
+            hint="Informe os 15 dígitos do cartão."
             placeholder="000000000000000"
             inputMode="numeric"
             maxLength={15}
             required
-            value={numeroSus}
-            aria-invalid={Boolean(fieldErrors.numeroSus)}
-            onChange={(event) => {
-              setNumeroSus(event.target.value);
-
-              if (fieldErrors.numeroSus) {
-                setFieldErrors((prev) => ({
-                  ...prev,
-                  numeroSus: undefined,
-                }));
-              }
-            }}
+            error={form.fieldErrors.numeroSus}
+            value={form.numeroSus}
+            onChange={(event) => form.alterarNumeroSus(event.target.value)}
           />
-
-          {fieldErrors.numeroSus && (
-            <p className="patient-form__error" role="alert">
-              {fieldErrors.numeroSus}
-            </p>
-          )}
         </div>
+      </FormSection>
 
-        <div className="patient-form__field">
+      <FormSection title="Contato">
+        <div className="form-grid">
           <TextField
             label="Telefone"
+            hint="Opcional. Inclua o DDD."
             placeholder="(00) 00000-0000"
             type="tel"
             inputMode="numeric"
-            value={telefone}
-            aria-invalid={Boolean(fieldErrors.telefone)}
-            onChange={(event) => {
-              setTelefone(event.target.value);
-
-              if (fieldErrors.telefone) {
-                setFieldErrors((prev) => ({
-                  ...prev,
-                  telefone: undefined,
-                }));
-              }
-            }}
+            error={form.fieldErrors.telefone}
+            value={form.telefone}
+            onChange={(event) => form.alterarTelefone(event.target.value)}
           />
-
-          {fieldErrors.telefone && (
-            <p className="patient-form__error" role="alert">
-              {fieldErrors.telefone}
-            </p>
-          )}
         </div>
-      </div>
+      </FormSection>
 
-      {formError && (
-        <p className="patient-form__form-error" role="alert">
-          {formError}
-        </p>
-      )}
+      {form.formError && <Notice variant="error">{form.formError}</Notice>}
 
-      <div className="patient-form__actions">
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Cadastrando...' : 'Cadastrar cidadão'}
+      <div className="form-actions">
+        <Button type="submit" disabled={form.isSubmitting} aria-busy={form.isSubmitting}>
+          {form.isSubmitting ? 'Cadastrando...' : 'Cadastrar cidadão'}
         </Button>
-
-        <button
-          type="button"
-          className="patient-form__cancel"
-          onClick={onCancelar}
-          disabled={isSubmitting}
-        >
+        <Button variant="secondary" onClick={onCancelar} disabled={form.isSubmitting}>
           Cancelar
-        </button>
+        </Button>
       </div>
     </form>
   );

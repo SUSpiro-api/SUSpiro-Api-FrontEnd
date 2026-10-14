@@ -6,14 +6,14 @@
     "types": ["node"],
     "skipLibCheck": true,
 
-    /* Bundler mode */
+    /* Configura como o TypeScript resolve os imports do Vite. */
     "module": "nodenext",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
 
-    /* Linting */
+    /* Ajuda a encontrar variáveis e parâmetros que não são usados. */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,

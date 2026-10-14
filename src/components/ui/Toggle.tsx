@@ -1,3 +1,5 @@
+// Cria um controle para ligar ou desligar uma opção.
+
 import './ui.css';
 
 export interface ToggleProps {
@@ -16,19 +18,19 @@ export function Toggle({
   disabled = false,
 }: ToggleProps) {
   return (
-    <div className="login-toggle-row">
-      {showLabel && <span className="login-toggle-row__label">{label}</span>}
+    <label className="ui-toggle-row">
+      {showLabel && <span className="ui-toggle-row__label">{label}</span>}
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         aria-label={label}
         disabled={disabled}
-        className={`login-toggle ${checked ? 'login-toggle--on' : ''}`}
+        className={['ui-toggle', checked && 'ui-toggle--on'].filter(Boolean).join(' ')}
         onClick={() => onChange(!checked)}
       >
-        <span className="login-toggle__knob" />
+        <span className="ui-toggle__knob" />
       </button>
-    </div>
+    </label>
   );
 }
