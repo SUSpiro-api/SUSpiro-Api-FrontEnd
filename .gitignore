@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.vite/
+coverage/
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+# Local secrets and build artifacts
+.env
+.env.*.local
+node_modules/
+target/
+dist/

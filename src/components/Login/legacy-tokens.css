@@ -1,0 +1,59 @@
+/* Guarda estilos antigos usados pela tela de login. */
+
+.login-page {
+  --color-brand-dark: #063a6d;
+  --color-brand: #0b5aa8;
+  --color-brand-medium: #1170ce;
+  --color-on-brand-secondary: #cfe0f2;
+  --color-on-brand-tertiary: #e8f0fa;
+  --color-ink-900: #0f172a;
+  --color-ink-600: #475569;
+  --color-ink-400: #64748b;
+  --color-ink-300: #94a3b8;
+  --color-border: #e2e8f0;
+  --color-surface: #f8fafc;
+  --color-page-bg: #eceef1;
+  --color-govbr: #1451b4;
+  --color-focus-ring: rgba(11, 90, 168, 0.14);
+  --color-focus-ring-strong: rgba(11, 90, 168, 0.45);
+  --color-danger: #b42318;
+  --color-danger-surface: #fff1f0;
+  --color-danger-border: #fecdca;
+  --color-success: #087443;
+  --color-success-surface: #ecfdf3;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 20px;
+  --control-height: 44px;
+  --font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+
+  font-size: 16px;
+  font-family: var(--font-family);
+  color: var(--color-ink-900);
+  line-height: normal;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+.login-page button:focus-visible,
+.login-page input:focus-visible {
+  outline: 3px solid var(--color-focus-ring-strong);
+  outline-offset: 2px;
+}
+
+.login-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.login-page ::selection {
+  background: var(--color-brand);
+  color: #fff;
+}

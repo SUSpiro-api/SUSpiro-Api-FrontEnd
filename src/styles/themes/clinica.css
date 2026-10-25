@@ -1,0 +1,39 @@
+/* Define as cores e fontes do tema da clínica. */
+
+:root,
+[data-theme='clinica'] {
+
+  --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  --color-bg-page: #f3f5f7;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f8fafc;
+  --color-surface-tint: #eaf3fb;
+  --color-border-tint: #c5daf1;
+
+  --color-text: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+
+  --color-action: #0b5aa8;
+  --color-action-hover: #084a8c;
+  --color-action-active: #063d75;
+  --color-text-on-action: #ffffff;
+  --color-link: #0b5aa8;
+
+  --color-border: #e1e6ec;
+  --color-border-strong: #748196;
+  --color-focus: #0b5aa8;
+
+  --color-danger: #b42318;
+  --color-danger-surface: #fff1f0;
+  --color-danger-border: #efb0aa;
+  --color-success: #087443;
+  --color-success-surface: #ecfdf3;
+  --color-success-border: #a7dcc0;
+  --color-warning: #8a5a00;
+  --color-warning-surface: #fff8e6;
+  --color-warning-border: #efd99a;
+
+}
