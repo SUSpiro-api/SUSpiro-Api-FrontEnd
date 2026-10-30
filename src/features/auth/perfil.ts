@@ -1,0 +1,13 @@
+const PERFIL_LABELS: Record<string, string> = {
+  SUPER_ADMIN: 'Super administrador',
+  GERENTE: 'Gerente',
+  MEDICO: 'Médico',
+  ENFERMEIRO: 'Enfermeiro',
+  PACIENTE: 'Paciente',
+  ATENDENTE: 'Recepcionista',
+};
+
+export function perfilLabel(perfil?: string | null): string {
+  if (!perfil) return 'Perfil não informado';
+  return PERFIL_LABELS[perfil] ?? perfil;
+}
