@@ -1,5 +1,4 @@
 import { useDialog } from '../../hooks/useDialog';
-import { MaterialIcon } from '../../components/icons';
 import { Button } from '../../components/ui/Button';
 import { formatIsoDate, guidePriorityLabels, guideStatusLabels, guideTypeLabels, specialtyLabel } from './guideLabels';
 import type { Guide } from '../guides';
@@ -37,9 +36,6 @@ export function GuideSuccessModal({ guide, onClose }: GuideSuccessModalProps) {
       onClick={dialog.handleDialogClick}
     >
       <div className="guide-success-modal__panel">
-        <div className="guide-success-modal__icon" aria-hidden="true">
-          <MaterialIcon name="check_circle" size={36} />
-        </div>
         <h2 id="guide-success-title">Guia gerada com sucesso</h2>
         <p className="guide-success-modal__number">
           {guide.sincronizacaoPendente ? 'Guia registrada neste dispositivo' : `Protocolo ${guide.protocolo ?? `#${guide.id}`}`}

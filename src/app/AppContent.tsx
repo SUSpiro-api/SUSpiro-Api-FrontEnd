@@ -2,7 +2,7 @@
 import { AuthorizedPage } from './AuthorizedPage';
 import { TrocaSenhaPage } from '../features/auth/password-change/TrocaSenhaPage';
 import { WeakPasswordNoticeModal } from '../features/auth/weak-password/WeakPasswordNoticeModal';
-import { InitialForgotPasswordFeature, InitialLoginFeature, InitialPublicHomePage } from './routes';
+import { InitialForgotPasswordFeature, InitialLoginFeature, InitialNotFoundPage, InitialPublicHomePage } from './routes';
 import type { useAppController } from './useAppController';
 
 interface AppContentProps {
@@ -14,6 +14,16 @@ export function AppContent({ controller }: AppContentProps) {
 
   if (route === '/recuperar-senha') {
     return <InitialForgotPasswordFeature onBack={() => controller.goTo('/login')} />;
+  }
+
+  if (!user && route === '/404') {
+    return (
+      <InitialNotFoundPage
+        actionLabel="Ir para a página inicial"
+        onAction={() => controller.goTo('/')}
+        onBack={window.history.length > 1 ? () => window.history.back() : undefined}
+      />
+    );
   }
 
   if (!user && route === '/') {

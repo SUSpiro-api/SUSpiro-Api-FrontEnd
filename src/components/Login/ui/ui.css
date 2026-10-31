@@ -172,12 +172,16 @@
 
 .login-button--primary {
   border: none;
-  background: linear-gradient(180deg, var(--color-brand-medium), var(--color-brand-dark));
+  background: var(--color-action, #0b5aa8);
   color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
-.login-button--primary:hover {
-  filter: brightness(1.08);
+.login-button--primary:hover:not(:disabled) {
+  background: var(--color-action-hover, #084a8c);
 }
 
 .login-button--secondary {

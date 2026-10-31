@@ -1,18 +1,20 @@
 import type { AuthUser } from '../features/auth/types';
-import { canAccessProfessionalDashboard, canCreateAdmin, canCreatePatient, canViewGuideQueue, isAdmin, isPatient } from '../features/auth/authorization';
+import { canCreateAdmin, isPatient } from '../features/auth/authorization';
 import {
   LazyCadastroCidadaoPage,
   LazyCadastroFuncionarioPage,
   LazyDashboardPage,
-  LazyUnauthorizedPage,
   LazyPerfilPage,
   LazyBuscarGuiaPage,
   LazyBuscarPacientePage,
   LazyMinhaSaudePage,
   LazyOrientacoesPage,
   InitialHomePage,
+  InitialNotFoundPage,
   resolveRoute,
 } from './routes';
+import { canAccessRoute } from './routeAccess';
+import { getStartRouteForProfile } from './startRoute';
 import { ShellPage } from './ShellPage';
 import type { useAppController } from './useAppController';
 
@@ -22,8 +24,7 @@ interface AuthorizedPageProps {
 }
 
 export function AuthorizedPage({ controller, user }: AuthorizedPageProps) {
-  const { route } = controller;
-  const page = getPageForRoute(route, user, controller);
+  const page = getPageForRoute(controller.route, user, controller);
 
   return <ShellPage controller={controller}>{page}</ShellPage>;
 }
@@ -34,18 +35,26 @@ function getPageForRoute(
   controller: ReturnType<typeof useAppController>,
 ) {
   const profile = user.perfil;
-  const backToDashboard = () => controller.goTo('/dashboard');
   const backToHome = () => controller.goTo('/');
-  const unauthorized = (onBack: () => void) => (
-    <LazyUnauthorizedPage onBack={onBack} />
-  );
+
+  // Rota inexistente ou fora das permissões do perfil: a mesma 404, sem revelar que a tela existe.
+  if (route === '/404' || !canAccessRoute(route, profile)) {
+    return (
+      <InitialNotFoundPage
+        variant="embedded"
+        actionLabel="Voltar ao início"
+        onAction={() => controller.goTo(getStartRouteForProfile(profile))}
+        onBack={window.history.length > 1 ? () => window.history.back() : undefined}
+      />
+    );
+  }
 
   switch (route) {
     case '/':
     case '/login':
-      if (isPatient(profile)) return <LazyMinhaSaudePage user={user} />;
-      if (canAccessProfessionalDashboard(profile)) return <LazyDashboardPage user={user} route="/dashboard" onNavigate={(path) => controller.goTo(resolveRoute(path))} />;
-      return unauthorized(backToDashboard);
+      return isPatient(profile)
+        ? <LazyMinhaSaudePage user={user} />
+        : <LazyDashboardPage user={user} route="/dashboard" onNavigate={(path) => controller.goTo(resolveRoute(path))} />;
 
     case '/perfil':
       return (
@@ -57,15 +66,12 @@ function getPageForRoute(
       );
 
     case '/minha-saude':
-      if (!isPatient(profile)) return unauthorized(backToDashboard);
       return <LazyMinhaSaudePage user={user} />;
 
     case '/orientacoes':
-      if (!isPatient(profile)) return unauthorized(() => controller.goTo('/minha-saude'));
       return <LazyOrientacoesPage />;
 
     case '/proteger-conta':
-      if (!isPatient(profile)) return unauthorized(() => controller.goTo('/minha-saude'));
       return (
         <LazyPerfilPage
           user={user}
@@ -76,15 +82,12 @@ function getPageForRoute(
       );
 
     case '/dashboard/buscar-paciente':
-    case '/dashboard/buscar-guia':
-      if (!canViewGuideQueue(profile)) return unauthorized(backToDashboard);
-      return route === '/dashboard/buscar-paciente'
-        ? <LazyBuscarPacientePage />
-        : <LazyBuscarGuiaPage />;
+      return <LazyBuscarPacientePage />;
 
+    case '/dashboard/buscar-guia':
+      return <LazyBuscarGuiaPage />;
 
     case '/cadastro-funcionario':
-      if (!isAdmin(profile)) return unauthorized(backToHome);
       return (
         <LazyCadastroFuncionarioPage
           podeCriarAdmin={canCreateAdmin(profile)}
@@ -98,19 +101,7 @@ function getPageForRoute(
     case '/dashboard/pacientes-recentes':
     case '/dashboard/atividade-recente':
     case '/dashboard/acoes-rapidas':
-    case '/dashboard/guias': {
-      const isSchedulingProfile = profile === 'ATENDENTE' || profile === 'ENFERMEIRO';
-      const isDoctorOnlySection = route !== '/dashboard' && route !== '/dashboard/guias';
-      const isForbiddenGuideQueue = route === '/dashboard/guias' && !canViewGuideQueue(profile);
-
-      if (
-        !canAccessProfessionalDashboard(profile)
-        || isForbiddenGuideQueue
-        || (isSchedulingProfile && isDoctorOnlySection)
-      ) {
-        return unauthorized(backToDashboard);
-      }
-
+    case '/dashboard/guias':
       return (
         <LazyDashboardPage
           user={user}
@@ -118,10 +109,8 @@ function getPageForRoute(
           onNavigate={(path) => controller.goTo(resolveRoute(path))}
         />
       );
-    }
 
     case '/cadastro-cidadao':
-      if (!canCreatePatient(profile)) return unauthorized(backToHome);
       return <LazyCadastroCidadaoPage onVoltar={backToHome} />;
 
     default:

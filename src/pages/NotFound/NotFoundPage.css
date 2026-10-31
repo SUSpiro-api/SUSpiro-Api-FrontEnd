@@ -1,0 +1,121 @@
+.not-found-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  background: var(--color-surface-tint);
+  color: var(--color-text);
+}
+
+.not-found-page--embedded {
+  min-height: 0;
+  display: block;
+  padding: 0;
+  background: transparent;
+}
+
+.not-found-card {
+  padding: clamp(24px, 4vw, 40px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.not-found-page--embedded .not-found-card {
+  max-width: 640px;
+}
+
+.not-found-page__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.not-found-page__mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-action);
+  color: var(--color-text-on-action);
+}
+
+.not-found-page__mark svg { width: 23px; height: 23px; }
+
+.not-found-page__word {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.03em;
+}
+
+.not-found-page__card {
+  width: min(100%, 560px);
+}
+
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.not-found__code {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-action);
+  font-size: clamp(4rem, 14vw, 6rem);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.not-found__code-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1em;
+  height: 1em;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-tint);
+  animation: not-found-float 3s var(--ease-standard) infinite alternate;
+}
+
+.not-found__eyebrow {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.not-found__title {
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.not-found__text {
+  max-width: 44ch;
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+@keyframes not-found-float {
+  to { transform: translateY(-6px); }
+}

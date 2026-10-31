@@ -1,5 +1,4 @@
 import { useDialog } from '../../hooks/useDialog';
-import { MaterialIcon } from '../../components/icons';
 import { Button } from '../../components/ui/Button';
 import { formatIsoDate, guideDetail, guideTypeLabels } from './guideLabels';
 import type { Guide } from '../guides';
@@ -26,9 +25,6 @@ export function AppointmentSuccessModal({ guide, onClose }: AppointmentSuccessMo
       onClick={dialog.handleDialogClick}
     >
       <div className="appointment-success-modal__panel">
-        <div className="appointment-success-modal__icon" aria-hidden="true">
-          <MaterialIcon name="check_circle" size={25} />
-        </div>
         <h2 id="appointment-success-title">Atendimento agendado</h2>
         <p className="appointment-success-modal__intro">
           O agendamento foi registrado. Confira os dados antes de fechar esta janela.

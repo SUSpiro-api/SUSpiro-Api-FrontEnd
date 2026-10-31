@@ -162,7 +162,6 @@ export function GuideScheduleModal({ guide, onClose, onScheduled }: GuideSchedul
               Cancelar
             </Button>
             <Button type="submit" disabled={form.submitting} aria-busy={form.submitting}>
-              <MaterialIcon name="event_available" size={18} />
               {form.submitting ? 'Agendando...' : 'Confirmar agendamento'}
             </Button>
           </footer>

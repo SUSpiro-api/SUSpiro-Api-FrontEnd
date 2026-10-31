@@ -1,5 +1,4 @@
 import { useArrowKeyTabs } from '../../../hooks/useArrowKeyTabs';
-import { MaterialIcon } from '../../../components/icons';
 import type { ScheduleType } from '../types';
 
 interface ScheduleTypeTabsProps {
@@ -34,7 +33,6 @@ export function ScheduleTypeTabs({ value, options, disabled, onChange }: Schedul
           onKeyDown={(event) => handleKeyDown(event, index)}
           disabled={disabled}
         >
-          <MaterialIcon name={option.icon} size={18} />
           <span>{option.label}</span>
         </button>
       ))}

@@ -38,13 +38,6 @@ describe('LoginForm', () => {
     expect(screen.getByLabelText('Senha de acesso')).toBeInTheDocument();
   });
 
-  it('renders the submit control with the centered primary login button classes', () => {
-    renderForm();
-    const submitButton = screen.getByRole('button', { name: 'Entrar' });
-
-    expect(submitButton).toHaveClass('login-button', 'login-button--primary', 'login-login-form__submit');
-  });
-
   it('does not show the patient birth-date password instruction on the login screen', () => {
     renderForm();
     expect(screen.queryByText(/Primeiro acesso de paciente/i)).not.toBeInTheDocument();

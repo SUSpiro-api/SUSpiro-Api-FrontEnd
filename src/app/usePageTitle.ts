@@ -3,6 +3,7 @@ import { brand } from '../config/brand';
 import type { AuthUser } from '../features/auth/types';
 import type { Route } from './routes';
 import { canAccessSchedulingDashboard } from '../features/auth/authorization';
+import { canAccessRoute } from './routeAccess';
 
 const routeTitles: Record<Route, string> = {
   '/': 'Página inicial',
@@ -24,15 +25,19 @@ const routeTitles: Record<Route, string> = {
   '/minha-saude': 'Minha saúde',
   '/orientacoes': 'Orientações',
   '/proteger-conta': 'Proteja sua conta',
+  '/404': 'Página não encontrada',
 };
 
 export function usePageTitle(route: Route, user: AuthUser | null) {
   useEffect(() => {
-    const visibleRoute = !user && route !== '/' && route !== '/recuperar-senha' && route !== '/criar-conta'
+    const visibleRoute = !user && route !== '/' && route !== '/recuperar-senha' && route !== '/criar-conta' && route !== '/404'
       ? '/login'
       : route;
 
-    const title = visibleRoute === '/dashboard' && canAccessSchedulingDashboard(user?.perfil)
+    const blocked = Boolean(user) && !canAccessRoute(visibleRoute, user?.perfil);
+    const title = blocked
+      ? routeTitles['/404']
+      : visibleRoute === '/dashboard' && canAccessSchedulingDashboard(user?.perfil)
       ? 'Central de agendamento'
       : visibleRoute === '/' && user
         ? 'Início'

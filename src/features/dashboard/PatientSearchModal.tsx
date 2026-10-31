@@ -49,7 +49,6 @@ export function PatientSearchModal({ open, onClose, onFound, findPatient }: Pati
                 aria-describedby={search.error ? 'patient-search-error' : undefined}
               />
               <Button type="submit">
-                <MaterialIcon name="search" size={18} />
                 Buscar paciente
               </Button>
             </div>
@@ -57,7 +56,6 @@ export function PatientSearchModal({ open, onClose, onFound, findPatient }: Pati
           </div>
 
           <div className="patient-search__hint" role="note">
-            <MaterialIcon name="info" size={18} />
             <p>Após localizar o paciente, consultas, retornos, exames e encaminhamentos serão filtrados para esse atendimento.</p>
           </div>
 

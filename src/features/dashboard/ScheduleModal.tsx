@@ -119,9 +119,6 @@ export function ScheduleModal({
             )}
 
             <div className="schedule-modal__summary" aria-live="polite">
-              <span className="schedule-modal__summary-icon" aria-hidden="true">
-                <MaterialIcon name="assignment_turned_in" size={18} />
-              </span>
               <p>
                 {patient
                   ? `${patient.name} · ${form.formatCpf(patient.cpf)} · ${form.selectedDetail} · guia para agendamento`
@@ -134,7 +131,6 @@ export function ScheduleModal({
                 Cancelar
               </Button>
               <Button type="submit" disabled={form.isSubmitting} aria-busy={form.isSubmitting}>
-                <MaterialIcon name="check" size={18} />
                 {form.isSubmitting ? 'Gerando guia...' : 'Salvar registro'}
               </Button>
             </footer>

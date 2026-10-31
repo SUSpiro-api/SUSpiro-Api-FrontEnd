@@ -3,8 +3,10 @@ import { LogoMark } from '../../components/icons';
 import { brand } from '../../config/brand';
 import './PublicHomePage.css';
 
+type PublicPath = '/login' | '/recuperar-senha';
+
 interface PublicHomePageProps {
-  onNavigate: (path: '/login') => void;
+  onNavigate: (path: PublicPath) => void;
 }
 
 const features = [
@@ -34,13 +36,41 @@ const profiles = [
   { title: 'Recepção e gestão', description: 'Organizam a fila de guias, os agendamentos e os cadastros conforme as permissões.' },
 ];
 
+const faqs = [
+  {
+    question: 'Como faço o meu primeiro acesso?',
+    answer: 'O cadastro é feito pela equipe da unidade de saúde. Você recebe, no e-mail informado, o seu CPF de acesso e uma senha temporária. Ao entrar pela primeira vez, o sistema pede que você crie uma senha pessoal.',
+  },
+  {
+    question: 'Não recebi o e-mail com a senha temporária. O que fazer?',
+    answer: 'Confira a caixa de spam e a lixeira. Se o e-mail não estiver lá, procure a unidade onde você foi cadastrado para conferir se o endereço de e-mail foi registrado corretamente.',
+  },
+  {
+    question: 'Esqueci a minha senha. Como recupero?',
+    answer: 'Na tela de entrada, use a opção “Esqueceu a senha?”. Enviamos um link para o e-mail da sua conta. O link vale por 30 minutos e só pode ser usado uma vez.',
+  },
+  {
+    question: 'O que significa uma solicitação “pendente”?',
+    answer: 'Significa que a solicitação foi registrada, mas a unidade ainda não definiu data e horário. Você não precisa abrir outra solicitação: enquanto estiver pendente, o sistema envia um lembrete por e-mail a cada cinco dias.',
+  },
+  {
+    question: 'Serei avisado quando o atendimento for agendado?',
+    answer: 'Sim. Quando a equipe agenda, você recebe um e-mail de confirmação com data, horário e local do atendimento. As mesmas informações ficam disponíveis na área Minha saúde.',
+  },
+  {
+    question: 'Posso usar o SUSpiro em caso de urgência?',
+    answer: 'Não. O SUSpiro serve para acompanhar atendimentos já registrados e não substitui orientação médica. Em emergências, ligue 192 (SAMU) ou procure o pronto atendimento mais próximo.',
+  },
+];
+
 function handleInternalLink(
   event: MouseEvent<HTMLAnchorElement>,
   onNavigate: PublicHomePageProps['onNavigate'],
+  path: PublicPath = '/login',
 ) {
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
-  onNavigate('/login');
+  onNavigate(path);
 }
 
 export function PublicHomePage({ onNavigate }: PublicHomePageProps) {
@@ -49,6 +79,10 @@ export function PublicHomePage({ onNavigate }: PublicHomePageProps) {
   function followLogin(event: MouseEvent<HTMLAnchorElement>) {
     setMenuOpen(false);
     handleInternalLink(event, onNavigate);
+  }
+
+  function followRecovery(event: MouseEvent<HTMLAnchorElement>) {
+    handleInternalLink(event, onNavigate, '/recuperar-senha');
   }
 
   function closeMenu() {
@@ -87,6 +121,7 @@ export function PublicHomePage({ onNavigate }: PublicHomePageProps) {
             <a href="#recursos" onClick={closeMenu}>Recursos</a>
             <a href="#como-funciona" onClick={closeMenu}>Como funciona</a>
             <a href="#perfis" onClick={closeMenu}>Perfis de acesso</a>
+            <a href="#duvidas" onClick={closeMenu}>Dúvidas</a>
             <a className="public-nav__login" href="/login" onClick={followLogin}>Entrar</a>
           </nav>
         </div>
@@ -119,7 +154,6 @@ export function PublicHomePage({ onNavigate }: PublicHomePageProps) {
                   fetchPriority="high"
                 />
               </div>
-              <a className="public-photo-credit" href="https://www.pexels.com/photo/a-female-nurse-in-green-scrubs-standing-with-her-arms-crossed-27666717/" target="_blank" rel="noreferrer">Foto ilustrativa · Tran Nhu Tuan / Pexels</a>
             </div>
           </div>
         </section>
@@ -178,66 +212,69 @@ export function PublicHomePage({ onNavigate }: PublicHomePageProps) {
           </div>
         </section>
 
-        <section className="public-final-cta">
-          <div className="public-container public-final-cta__inner">
-            <div>
-              <span className="public-kicker">SUSpiro</span>
-              <h2>Consulte suas informações de atendimento.</h2>
-              <p>Entre na sua conta para visualizar os registros disponíveis para você.</p>
+        <section className="public-section public-faq" id="duvidas">
+          <div className="public-container public-faq__grid">
+            <header className="public-faq__intro">
+              <span className="public-kicker">Dúvidas frequentes</span>
+              <h2>Respostas para as perguntas mais comuns.</h2>
+              <p>Reunimos o que pacientes mais perguntam sobre acesso, senha, solicitações e avisos por e-mail.</p>
+            </header>
+            <div className="public-faq__list">
+              {faqs.map((item) => (
+                <details className="public-faq__item" key={item.question}>
+                  <summary>{item.question}</summary>
+                  <p>{item.answer}</p>
+                </details>
+              ))}
             </div>
-            <a className="public-button public-button--primary" href="/login" onClick={followLogin}>
-              Ir para o login
-            </a>
           </div>
         </section>
       </main>
 
       <footer className="public-footer">
-        <div className="public-container public-footer__grid">
-          <section className="public-footer__brand" aria-labelledby="public-footer-brand-title">
-            <a className="public-brand public-brand--footer" href="/" aria-label={`${brand.name} — página inicial`}>
-              <span className="public-brand__mark"><LogoMark aria-hidden="true" /></span>
-              <span className="public-brand__word" id="public-footer-brand-title">{brand.name}<span>.</span></span>
-            </a>
-            <p>
-              Uma plataforma digital para organizar solicitações, consultas, exames,
-              retornos e encaminhamentos em um só lugar.
-            </p>
-            <span className="public-footer__tagline">Informação organizada para acompanhar cada etapa do cuidado.</span>
-          </section>
+        <div className="public-container">
+          <div className="public-footer__top">
+            <div className="public-footer__about">
+              <a className="public-brand public-brand--footer" href="/" aria-label={`${brand.name} — página inicial`}>
+                <span className="public-brand__mark"><LogoMark aria-hidden="true" /></span>
+                <span className="public-brand__word">{brand.name}<span>.</span></span>
+              </a>
+              <p>Plataforma digital para organizar e acompanhar consultas, exames, retornos e encaminhamentos em saúde.</p>
+              <a className="public-footer__access" href="/login" onClick={followLogin}>Acessar minha conta</a>
+            </div>
 
-          <nav className="public-footer__nav" aria-label="Navegação institucional">
-            <h2>Conheça o SUSpiro</h2>
-            <a href="#recursos">O que você pode acompanhar</a>
-            <a href="#como-funciona">Como funciona</a>
-            <a href="#perfis">Perfis de acesso</a>
-          </nav>
+            <nav className="public-footer__column" aria-label="Plataforma">
+              <h3>Plataforma</h3>
+              <ul>
+                <li><a href="#recursos">Recursos</a></li>
+                <li><a href="#como-funciona">Como funciona</a></li>
+                <li><a href="#perfis">Perfis de acesso</a></li>
+                <li><a href="#duvidas">Dúvidas frequentes</a></li>
+              </ul>
+            </nav>
 
-          <nav className="public-footer__nav" aria-label="Acesso à plataforma">
-            <h2>Acesso à plataforma</h2>
-            <a href="/login" onClick={followLogin}>Área do paciente</a>
-            <a href="/login" onClick={followLogin}>Área dos profissionais</a>
-            <a href="/login" onClick={followLogin}>Recepção e gestão</a>
-            <a className="public-footer__access-link" href="/login" onClick={followLogin}>Entrar no sistema <span aria-hidden="true">→</span></a>
-          </nav>
+            <nav className="public-footer__column" aria-label="Acesso">
+              <h3>Acesso</h3>
+              <ul>
+                <li><a href="/login" onClick={followLogin}>Entrar</a></li>
+                <li><a href="/recuperar-senha" onClick={followRecovery}>Recuperar senha</a></li>
+              </ul>
+            </nav>
 
-          <section className="public-footer__guidance" aria-labelledby="public-footer-guidance-title">
-            <h2 id="public-footer-guidance-title">Informações importantes</h2>
-            <p>
-              Cada conta visualiza as funcionalidades e informações permitidas para seu perfil,
-              conforme os registros disponíveis na unidade de saúde.
-            </p>
-            <p>
-              O SUSpiro não substitui orientação médica e não é um canal de urgência ou emergência.
-              Em situações urgentes, procure atendimento presencial imediatamente.
-            </p>
-          </section>
-        </div>
+            <div className="public-footer__column public-footer__help">
+              <h3>Em caso de urgência</h3>
+              <p>O SUSpiro não atende emergências. Ligue ou procure ajuda imediata:</p>
+              <ul>
+                <li><strong>192</strong> <span>SAMU</span></li>
+                <li><strong>136</strong> <span>Disque Saúde</span></li>
+              </ul>
+            </div>
+          </div>
 
-        <div className="public-footer__bottom">
-          <div className="public-container public-footer__bottom-inner">
-            <span>© {new Date().getFullYear()} SUSpiro. Todos os direitos reservados.</span>
-            <span>Plataforma digital de apoio à organização do atendimento em saúde.</span>
+          <div className="public-footer__bottom">
+            <small>© {new Date().getFullYear()} {brand.name}. Todos os direitos reservados.</small>
+            <small>O SUSpiro não substitui orientação médica nem serviços de emergência.</small>
+            <a href="#conteudo" className="public-footer__top-link">Voltar ao topo</a>
           </div>
         </div>
       </footer>

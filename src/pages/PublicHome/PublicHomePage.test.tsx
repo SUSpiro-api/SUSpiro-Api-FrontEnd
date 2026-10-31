@@ -15,16 +15,30 @@ describe('PublicHomePage', () => {
     expect(screen.queryByText('PLATAFORMA DE ATENDIMENTO EM SAÚDE')).not.toBeInTheDocument();
     expect(container.querySelector('.public-hero-photo__caption')).not.toBeInTheDocument();
     expect(container.querySelector('.material-symbols-outlined')).not.toBeInTheDocument();
+    expect(container.querySelector('.public-photo-credit')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Pexels/)).not.toBeInTheDocument();
   });
 
+  it('mostra dúvidas frequentes no lugar do chamado final para entrar', () => {
+    const { container } = render(<PublicHomePage onNavigate={vi.fn()} />);
 
-  it('exibe um rodapé institucional com navegação, acessos e orientações', () => {
-    render(<PublicHomePage onNavigate={vi.fn()} />);
+    expect(screen.getByRole('heading', { name: 'Respostas para as perguntas mais comuns.' })).toBeInTheDocument();
+    expect(screen.getByText('Como faço o meu primeiro acesso?')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Ir para o login' })).not.toBeInTheDocument();
+    expect(container.querySelectorAll('.public-faq__item').length).toBeGreaterThanOrEqual(5);
+  });
 
-    expect(screen.getByRole('navigation', { name: 'Navegação institucional' })).toBeInTheDocument();
-    expect(screen.getByRole('navigation', { name: 'Acesso à plataforma' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Informações importantes' })).toBeInTheDocument();
-    expect(screen.getByText(/não é um canal de urgência ou emergência/i)).toBeInTheDocument();
+  it('apresenta o rodapé institucional com navegação, acesso e contatos de urgência', () => {
+    const onNavigate = vi.fn();
+    render(<PublicHomePage onNavigate={onNavigate} />);
+    const footer = screen.getByRole('contentinfo');
+
+    expect(footer).toHaveTextContent(`© ${new Date().getFullYear()} SUSpiro`);
+    expect(footer).toHaveTextContent('SAMU');
+    expect(footer).toHaveTextContent('Disque Saúde');
+
+    fireEvent.click(screen.getByRole('link', { name: 'Recuperar senha' }));
+    expect(onNavigate).toHaveBeenCalledWith('/recuperar-senha');
   });
 
   it('navega para o login sem recarregar a página', () => {

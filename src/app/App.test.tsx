@@ -56,12 +56,39 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/login');
   });
 
-  it('sends unknown routes to the public homepage when there is no session', async () => {
+  it('shows the 404 page for unknown routes when there is no session', async () => {
     window.history.pushState({}, '', '/rota-inexistente');
     vi.spyOn(authService, 'restoreSession').mockResolvedValue(null);
     render(<App />);
 
+    expect(await screen.findByRole('heading', { level: 1, name: 'Página não encontrada' })).toBeInTheDocument();
+    expect(document.title).toBe('Página não encontrada · SUSpiro');
+    expect(window.location.pathname).toBe('/rota-inexistente');
+
+    fireEvent.click(screen.getByRole('button', { name: /Ir para a página inicial/ }));
     expect(await screen.findByRole('heading', { level: 1, name: /Quando o cuidado importa/ })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/');
+  });
+
+  it('shows the 404 page inside the shell for a signed-in user and returns to their start page', async () => {
+    setToken(makeToken('ATENDENTE'));
+    window.history.pushState({}, '', '/pagina-que-nao-existe');
+    vi.spyOn(authService, 'restoreSession').mockResolvedValue(getCurrentUser());
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Página não encontrada' })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'Navegação principal' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Voltar ao início/ }));
+    await vi.waitFor(() => expect(window.location.pathname).toBe('/dashboard'));
+  });
+
+  it('does not treat a known route with a trailing slash as 404', async () => {
+    window.history.pushState({}, '', '/login/');
+    vi.spyOn(authService, 'restoreSession').mockResolvedValue(null);
+    render(<App />);
+
+    expect(await screen.findByRole('form', { name: 'Formulário de autenticação' })).toBeInTheDocument();
   });
 
   it('shows the home with the profile name and a masked CPF, never the raw profile value', async () => {
@@ -274,8 +301,22 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByText('Acesso não autorizado')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Página não encontrada' })).toBeInTheDocument();
+    expect(document.title).toBe('Página não encontrada · SUSpiro');
     expect(screen.queryByRole('form', { name: 'Formulário de cadastro de funcionário' })).not.toBeInTheDocument();
+  });
+
+  it('shows the 404 page when a patient opens a professional area', async () => {
+    setToken(makeToken('PACIENTE'));
+    window.history.pushState({}, '', '/dashboard');
+    vi.spyOn(authService, 'restoreSession').mockResolvedValue(getCurrentUser());
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Página não encontrada' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Central de agendamento' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Voltar ao início/ }));
+    await vi.waitFor(() => expect(window.location.pathname).toBe('/minha-saude'));
   });
 
   it('sets a distinct title for each screen', async () => {
