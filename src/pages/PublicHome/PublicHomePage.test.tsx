@@ -17,6 +17,16 @@ describe('PublicHomePage', () => {
     expect(container.querySelector('.material-symbols-outlined')).not.toBeInTheDocument();
   });
 
+
+  it('exibe um rodapé institucional com navegação, acessos e orientações', () => {
+    render(<PublicHomePage onNavigate={vi.fn()} />);
+
+    expect(screen.getByRole('navigation', { name: 'Navegação institucional' })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'Acesso à plataforma' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Informações importantes' })).toBeInTheDocument();
+    expect(screen.getByText(/não é um canal de urgência ou emergência/i)).toBeInTheDocument();
+  });
+
   it('navega para o login sem recarregar a página', () => {
     const onNavigate = vi.fn();
     render(<PublicHomePage onNavigate={onNavigate} />);

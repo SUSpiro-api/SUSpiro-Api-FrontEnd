@@ -193,14 +193,52 @@ export function PublicHomePage({ onNavigate }: PublicHomePageProps) {
       </main>
 
       <footer className="public-footer">
-        <div className="public-container public-footer__inner">
-          <a className="public-brand public-brand--footer" href="/" aria-label={`${brand.name} — página inicial`}>
-            <span className="public-brand__mark"><LogoMark aria-hidden="true" /></span>
-            <span className="public-brand__word">{brand.name}<span>.</span></span>
-          </a>
-          <p>Plataforma digital para organizar e acompanhar atendimentos em saúde.</p>
-          <a href="/login" onClick={followLogin}>Acessar o sistema</a>
-          <small>O SUSpiro não substitui orientação médica nem serviços de emergência.</small>
+        <div className="public-container public-footer__grid">
+          <section className="public-footer__brand" aria-labelledby="public-footer-brand-title">
+            <a className="public-brand public-brand--footer" href="/" aria-label={`${brand.name} — página inicial`}>
+              <span className="public-brand__mark"><LogoMark aria-hidden="true" /></span>
+              <span className="public-brand__word" id="public-footer-brand-title">{brand.name}<span>.</span></span>
+            </a>
+            <p>
+              Uma plataforma digital para organizar solicitações, consultas, exames,
+              retornos e encaminhamentos em um só lugar.
+            </p>
+            <span className="public-footer__tagline">Informação organizada para acompanhar cada etapa do cuidado.</span>
+          </section>
+
+          <nav className="public-footer__nav" aria-label="Navegação institucional">
+            <h2>Conheça o SUSpiro</h2>
+            <a href="#recursos">O que você pode acompanhar</a>
+            <a href="#como-funciona">Como funciona</a>
+            <a href="#perfis">Perfis de acesso</a>
+          </nav>
+
+          <nav className="public-footer__nav" aria-label="Acesso à plataforma">
+            <h2>Acesso à plataforma</h2>
+            <a href="/login" onClick={followLogin}>Área do paciente</a>
+            <a href="/login" onClick={followLogin}>Área dos profissionais</a>
+            <a href="/login" onClick={followLogin}>Recepção e gestão</a>
+            <a className="public-footer__access-link" href="/login" onClick={followLogin}>Entrar no sistema <span aria-hidden="true">→</span></a>
+          </nav>
+
+          <section className="public-footer__guidance" aria-labelledby="public-footer-guidance-title">
+            <h2 id="public-footer-guidance-title">Informações importantes</h2>
+            <p>
+              Cada conta visualiza as funcionalidades e informações permitidas para seu perfil,
+              conforme os registros disponíveis na unidade de saúde.
+            </p>
+            <p>
+              O SUSpiro não substitui orientação médica e não é um canal de urgência ou emergência.
+              Em situações urgentes, procure atendimento presencial imediatamente.
+            </p>
+          </section>
+        </div>
+
+        <div className="public-footer__bottom">
+          <div className="public-container public-footer__bottom-inner">
+            <span>© {new Date().getFullYear()} SUSpiro. Todos os direitos reservados.</span>
+            <span>Plataforma digital de apoio à organização do atendimento em saúde.</span>
+          </div>
         </div>
       </footer>
     </div>
