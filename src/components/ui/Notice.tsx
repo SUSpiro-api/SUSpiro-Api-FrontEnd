@@ -1,5 +1,3 @@
-// Mostra mensagens de erro, sucesso ou informação.
-
 import type { ReactNode } from 'react';
 import { MaterialIcon } from '../icons';
 import './ui.css';

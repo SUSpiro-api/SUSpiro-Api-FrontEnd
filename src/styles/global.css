@@ -1,7 +1,21 @@
-/* Define os estilos gerais do sistema. */
-
 @import './tokens.css';
 @import './themes/clinica.css';
+@import './themes/escuro.css';
+@import './themes/suave.css';
+
+/* Compatibilidade visual dos componentes de autenticação legados. */
+:root {
+  --color-brand: var(--color-action);
+  --color-brand-dark: var(--color-action-active);
+  --color-ink-300: var(--color-border-strong);
+  --color-ink-400: var(--color-text-muted);
+  --color-ink-900: var(--color-text);
+  --color-on-brand-secondary: var(--color-text-on-action);
+  --color-on-brand-tertiary: var(--color-text-on-action);
+  --color-page-bg: var(--color-bg-page);
+  --font-family: var(--font-body);
+}
+
 
 *,
 *::before,
@@ -11,6 +25,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+  accent-color: var(--color-action);
 }
 
 body {
@@ -22,6 +38,33 @@ body {
   color: var(--color-text);
   background: var(--color-bg-page);
   -webkit-font-smoothing: antialiased;
+}
+
+.shell *,
+.shell *::-webkit-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.shell ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.shell ::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  background-clip: content-box;
+}
+
+.shell ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-border-strong);
+  background-clip: content-box;
+}
+
+.shell ::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 :where(.shell) :where(h1, h2, h3, p) {
@@ -112,4 +155,25 @@ a {
 .app-error__icon {
   display: inline-grid;
   place-items: center;
+}
+
+.material-symbols-outlined {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
 }

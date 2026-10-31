@@ -4,21 +4,23 @@ import { useFocusFirstInvalidField } from '../../../hooks/useFocusFirstInvalidFi
 import { formatCpf } from '../../../utils/cpf';
 import { cadastrarFuncionario, type PerfilFuncionario, type UsuarioCriado } from '../service';
 import {
-  validateConfirmarSenha,
   validateCpfFuncionario,
+  validateEmailFuncionario,
   validateNome,
   validateSenhaFuncionario,
 } from '../validation';
 
-type Campo = 'nome' | 'cpf' | 'senha' | 'confirmarSenha';
+type Campo = 'nome' | 'cpf' | 'email' | 'sexo' | 'registroProfissional' | 'senhaTemporaria';
 type ErrosDoFormulario = Partial<Record<Campo, string>>;
 
-export function useCadastroFuncionarioForm(onSucesso: (funcionario: UsuarioCriado) => void) {
+export function useCadastroFuncionarioForm(onSucesso: (funcionario: UsuarioCriado) => void, perfilInicial: PerfilFuncionario = 'ATENDENTE') {
   const [nome, setNome] = useState('');
   const [cpf, setCpf] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [perfil, setPerfil] = useState<PerfilFuncionario>('RECEPCIONISTA');
+  const [email, setEmail] = useState('');
+  const [sexo, setSexo] = useState('');
+  const [registroProfissional, setRegistroProfissional] = useState('');
+  const [senhaTemporaria, setSenhaTemporaria] = useState('');
+  const [perfil, setPerfil] = useState<PerfilFuncionario>(perfilInicial);
   const [fieldErrors, setFieldErrors] = useState<ErrosDoFormulario>({});
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,14 +40,18 @@ export function useCadastroFuncionarioForm(onSucesso: (funcionario: UsuarioCriad
     clearError('cpf');
   }
 
-  function alterarSenha(valor: string) {
-    setSenha(valor);
-    clearError('senha');
+  function alterarEmail(valor: string) {
+    setEmail(valor);
+    clearError('email');
   }
 
-  function alterarConfirmacaoSenha(valor: string) {
-    setConfirmarSenha(valor);
-    clearError('confirmarSenha');
+  function alterarSexo(valor: string) { setSexo(valor); clearError('sexo'); }
+
+  function alterarRegistroProfissional(valor: string) { setRegistroProfissional(valor.slice(0, 40)); clearError('registroProfissional'); }
+
+  function alterarSenhaTemporaria(valor: string) {
+    setSenhaTemporaria(valor);
+    clearError('senhaTemporaria');
   }
 
   function alterarPerfil(valor: PerfilFuncionario) {
@@ -58,8 +64,10 @@ export function useCadastroFuncionarioForm(onSucesso: (funcionario: UsuarioCriad
     const errors: ErrosDoFormulario = {
       nome: validateNome(nome),
       cpf: validateCpfFuncionario(cpf),
-      senha: validateSenhaFuncionario(senha),
-      confirmarSenha: validateConfirmarSenha(senha, confirmarSenha),
+      email: validateEmailFuncionario(email),
+      sexo: sexo ? '' : 'Selecione o sexo.',
+      registroProfissional: perfil === 'MEDICO' || perfil === 'ENFERMEIRO' ? (registroProfissional.trim() ? '' : `Informe o ${perfil === 'ENFERMEIRO' ? 'COREN' : 'CRM'}.`) : '',
+      senhaTemporaria: validateSenhaFuncionario(senhaTemporaria) || undefined,
     };
     const validErrors = Object.fromEntries(
       Object.entries(errors).filter(([, message]) => message),
@@ -76,7 +84,7 @@ export function useCadastroFuncionarioForm(onSucesso: (funcionario: UsuarioCriad
     setIsSubmitting(true);
 
     try {
-      const funcionario = await cadastrarFuncionario({ nome, cpf, senha, perfil });
+      const funcionario = await cadastrarFuncionario({ nome, cpf, email, perfil, sexo, registroProfissional, senhaTemporaria });
       onSucesso(funcionario);
     } catch (error) {
       setFormError(
@@ -92,8 +100,10 @@ export function useCadastroFuncionarioForm(onSucesso: (funcionario: UsuarioCriad
   return {
     nome,
     cpf,
-    senha,
-    confirmarSenha,
+    email,
+    sexo,
+    registroProfissional,
+    senhaTemporaria,
     perfil,
     fieldErrors,
     formError,
@@ -102,8 +112,10 @@ export function useCadastroFuncionarioForm(onSucesso: (funcionario: UsuarioCriad
     handleSubmit,
     alterarNome,
     alterarCpf,
-    alterarSenha,
-    alterarConfirmacaoSenha,
+    alterarEmail,
+    alterarSexo,
+    alterarRegistroProfissional,
+    alterarSenhaTemporaria,
     alterarPerfil,
   };
 }

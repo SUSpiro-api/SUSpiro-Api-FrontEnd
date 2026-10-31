@@ -3,9 +3,10 @@ import { perfilLabel } from './perfil';
 
 describe('perfilLabel', () => {
   it('translates the internal profile values', () => {
-    expect(perfilLabel('RECEPCIONISTA')).toBe('Recepcionista');
+    expect(perfilLabel('ATENDENTE')).toBe('Recepcionista');
     expect(perfilLabel('SUPER_ADMIN')).toBe('Super administrador');
     expect(perfilLabel('MEDICO')).toBe('Médico');
+    expect(perfilLabel('ATENDENTE')).toBe('Recepção');
   });
 
   it('handles a missing or unknown profile', () => {

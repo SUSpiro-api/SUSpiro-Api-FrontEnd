@@ -1,5 +1,3 @@
-// Mostra a ilustração usada na tela de login.
-
 import healthEmblem from '../../assets/health-emblem.svg';
 
 export function HealthIllustration() {

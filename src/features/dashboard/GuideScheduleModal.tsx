@@ -1,5 +1,3 @@
-// Mostra a janela para agendar uma guia.
-
 import { MaterialIcon } from '../../components/icons';
 import { Button } from '../../components/ui/Button';
 import { todayIsoDate } from './date';
@@ -34,7 +32,7 @@ export function GuideScheduleModal({ guide, onClose, onScheduled }: GuideSchedul
         <header className="schedule-modal__header">
           <div>
             <h2 id="guide-schedule-title">Agendar guia</h2>
-            <p>Defina a data e o horário para transformar esta solicitação em um atendimento agendado.</p>
+            <p>Informe quando e onde o atendimento acontecerá para concluir o agendamento.</p>
           </div>
           <button
             type="button"
@@ -98,6 +96,65 @@ export function GuideScheduleModal({ guide, onClose, onScheduled }: GuideSchedul
             </div>
           </div>
 
+          <div className="schedule-location-grid">
+            <div className="ui-field schedule-location-grid__wide">
+              <label className="ui-field__label" htmlFor="guide-schedule-facility">Hospital ou clínica</label>
+              <input
+                id="guide-schedule-facility"
+                className="ui-field__input"
+                type="text"
+                autoComplete="organization"
+                maxLength={180}
+                placeholder="Nome da unidade de saúde"
+                value={form.clinicName}
+                onChange={(event) => form.setClinicName(event.target.value)}
+                required
+              />
+            </div>
+            <div className="ui-field schedule-location-grid__wide">
+              <label className="ui-field__label" htmlFor="guide-schedule-address">Endereço</label>
+              <input
+                id="guide-schedule-address"
+                className="ui-field__input"
+                type="text"
+                autoComplete="street-address"
+                maxLength={300}
+                placeholder="Rua, número e complemento"
+                value={form.clinicAddress}
+                onChange={(event) => form.setClinicAddress(event.target.value)}
+                required
+              />
+            </div>
+            <div className="ui-field">
+              <label className="ui-field__label" htmlFor="guide-schedule-city">Cidade</label>
+              <input
+                id="guide-schedule-city"
+                className="ui-field__input"
+                type="text"
+                autoComplete="address-level2"
+                maxLength={120}
+                placeholder="Cidade"
+                value={form.clinicCity}
+                onChange={(event) => form.setClinicCity(event.target.value)}
+                required
+              />
+            </div>
+            <div className="ui-field">
+              <label className="ui-field__label" htmlFor="guide-schedule-state">UF</label>
+              <input
+                id="guide-schedule-state"
+                className="ui-field__input"
+                type="text"
+                autoComplete="address-level1"
+                maxLength={2}
+                minLength={2}
+                placeholder="SP"
+                value={form.clinicState}
+                onChange={(event) => form.setClinicState(event.target.value)}
+                required
+              />
+            </div>
+          </div>
           {form.error && <p className="ui-field__error" role="alert">{form.error}</p>}
 
           <footer className="schedule-modal__footer">

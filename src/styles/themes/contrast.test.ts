@@ -1,8 +1,8 @@
-// Confere se as cores do tema têm contraste suficiente.
-
 import { describe, expect, it } from 'vitest';
 import { contrastRatio } from '../../utils/contrast';
-import clinica from './clinica.css?raw';
+import claro from './clinica.css?raw';
+import escuro from './escuro.css?raw';
+import suave from './suave.css?raw';
 
 function readColors(css: string): Record<string, string> {
   const colors: Record<string, string> = {};
@@ -11,6 +11,13 @@ function readColors(css: string): Record<string, string> {
   }
   return colors;
 }
+
+const baseColors = readColors(claro);
+const themeColors = [
+  ['claro', baseColors],
+  ['escuro', readColors(escuro)],
+  ['suave', { ...baseColors, ...readColors(suave) }],
+] as const;
 
 const TEXT = 4.5;
 const COMPONENT = 3;
@@ -47,14 +54,21 @@ const PAIRS: Array<[string, string, number]> = [
   ['color-action', 'color-surface', COMPONENT],
 ];
 
-describe.each([['clinica', clinica]])('tema %s: contraste WCAG 2.2 AA', (_name, css) => {
-  const colors = readColors(css);
-
+describe.each(themeColors)('tema %s: contraste WCAG 2.2 AA', (_name, colors) => {
   it.each(PAIRS)('%s sobre %s atinge o mínimo de %s:1', (foreground, background, minimum) => {
     expect(colors[foreground], `${foreground} não existe no tema`).toBeDefined();
     expect(colors[background], `${background} não existe no tema`).toBeDefined();
 
     const ratio = contrastRatio(colors[foreground], colors[background]);
     expect(ratio, `${foreground} sobre ${background} = ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(minimum);
+  });
+});
+
+
+describe('tema suave', () => {
+  it('altera somente o fundo da página e preserva a identidade azul', () => {
+    const softOverrides = readColors(suave);
+    expect(Object.keys(softOverrides)).toEqual(['color-bg-page']);
+    expect({ ...baseColors, ...softOverrides }['color-action']).toBe('#0b5aa8');
   });
 });

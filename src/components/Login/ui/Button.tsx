@@ -1,5 +1,3 @@
-// Cria o botão usado nos formulários de login.
-
 import type { ButtonHTMLAttributes } from 'react';
 import './ui.css';
 

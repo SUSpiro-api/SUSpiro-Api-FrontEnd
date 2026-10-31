@@ -9,7 +9,7 @@ function makeToken(expSecondsFromNow: number): string {
 
   return [
     encode({ alg: 'HS256' }),
-    encode({ sub: '52998224725', perfil: 'RECEPCIONISTA', iat: now, exp: now + expSecondsFromNow }),
+    encode({ sub: '11144477735', perfil: 'ATENDENTE', iat: now, exp: now + expSecondsFromNow }),
     'assinatura',
   ].join('.');
 }

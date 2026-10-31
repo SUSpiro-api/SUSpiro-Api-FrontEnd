@@ -1,9 +1,7 @@
-// Mostra a confirmação quando uma guia é criada.
-
-import { useEffect, useRef } from 'react';
+import { useDialog } from '../../hooks/useDialog';
 import { MaterialIcon } from '../../components/icons';
 import { Button } from '../../components/ui/Button';
-import { formatIsoDate, guideTypeLabels, specialtyLabel } from './guideLabels';
+import { formatIsoDate, guidePriorityLabels, guideStatusLabels, guideTypeLabels, specialtyLabel } from './guideLabels';
 import type { Guide } from '../guides';
 
 interface GuideSuccessModalProps {
@@ -11,24 +9,18 @@ interface GuideSuccessModalProps {
   onClose: () => void;
 }
 
+function formatCreatedAt(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(date);
+}
+
 export function GuideSuccessModal({ guide, onClose }: GuideSuccessModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    if (guide && !dialog.open) {
-      dialog.showModal();
-      requestAnimationFrame(() => dialog.querySelector<HTMLElement>('[data-autofocus]')?.focus());
-    }
-
-    if (!guide && dialog.open) dialog.close();
-  }, [guide]);
+  const dialog = useDialog({ isOpen: Boolean(guide), focusSelector: '[data-autofocus]', onClose });
 
   if (!guide) {
     return (
-      <dialog ref={dialogRef} className="guide-success-modal" aria-labelledby="guide-success-title" />
+      <dialog ref={dialog.dialogRef} className="guide-success-modal" aria-labelledby="guide-success-title" />
     );
   }
 
@@ -38,24 +30,24 @@ export function GuideSuccessModal({ guide, onClose }: GuideSuccessModalProps) {
 
   return (
     <dialog
-      ref={dialogRef}
+      ref={dialog.dialogRef}
       className="guide-success-modal"
       aria-labelledby="guide-success-title"
-      onCancel={(event) => {
-        event.preventDefault();
-        onClose();
-      }}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
+      onCancel={dialog.handleCancel}
+      onClick={dialog.handleDialogClick}
     >
       <div className="guide-success-modal__panel">
         <div className="guide-success-modal__icon" aria-hidden="true">
           <MaterialIcon name="check_circle" size={36} />
         </div>
         <h2 id="guide-success-title">Guia gerada com sucesso</h2>
+        <p className="guide-success-modal__number">
+          {guide.sincronizacaoPendente ? 'Guia registrada neste dispositivo' : `Protocolo ${guide.protocolo ?? `#${guide.id}`}`}
+        </p>
         <p className="guide-success-modal__description">
-          A guia foi salva no sistema e encaminhada para a fila de agendamento da recepção e enfermagem.
+          {guide.sincronizacaoPendente
+            ? 'A guia foi registrada e já está na fila de agendamento e no histórico do paciente. Ela será enviada ao servidor automaticamente assim que a conexão estiver disponível.'
+            : 'A guia foi salva e encaminhada para a fila de agendamento da recepção e enfermagem e para o histórico do paciente.'}
         </p>
 
         <dl className="guide-success-modal__details">
@@ -75,6 +67,28 @@ export function GuideSuccessModal({ guide, onClose }: GuideSuccessModalProps) {
             <dt>Data solicitada</dt>
             <dd>{formatIsoDate(guide.dataSolicitada)}</dd>
           </div>
+          <div>
+            <dt>Prioridade</dt>
+            <dd>{guidePriorityLabels[guide.prioridade]}</dd>
+          </div>
+          <div>
+            <dt>Situação</dt>
+            <dd>{guideStatusLabels[guide.status]}</dd>
+          </div>
+          <div>
+            <dt>Solicitante</dt>
+            <dd>{guide.solicitanteNome}</dd>
+          </div>
+          <div>
+            <dt>Gerada em</dt>
+            <dd>{formatCreatedAt(guide.criadoEm)}</dd>
+          </div>
+          {guide.observacao && (
+            <div className="guide-success-modal__wide">
+              <dt>Observação</dt>
+              <dd>{guide.observacao}</dd>
+            </div>
+          )}
         </dl>
 
         <footer className="schedule-modal__footer">

@@ -1,7 +1,7 @@
-// Mostra os dados principais do paciente selecionado.
-
 import { MaterialIcon } from '../../components/icons';
 import { formatCpf } from '../../utils/cpf';
+import { ageFromIsoDate, formatIsoDate } from '../../utils/date';
+import { initialsFromName } from '../../utils/initials';
 import type { Patient } from './types';
 
 interface PatientSummaryProps {
@@ -10,21 +10,19 @@ interface PatientSummaryProps {
   onClearPatient: () => void;
 }
 
-function formatBirthDate(date: string): string {
-  return new Intl.DateTimeFormat('pt-BR').format(new Date(`${date}T12:00:00`));
-}
-
 export function PatientSummary({ patient, onChangePatient, onClearPatient }: PatientSummaryProps) {
+  const initials = initialsFromName(patient.name);
+
   return (
     <section className="patient-context" aria-labelledby="patient-context-title">
       <div className="patient-context__icon" aria-hidden="true">
-        <MaterialIcon name="person" size={24} />
+        {initials || '—'}
       </div>
       <div className="patient-context__info">
         <h2 id="patient-context-title">{patient.name}</h2>
         <dl className="patient-context__details">
-          <div><dt>CPF</dt><dd>{formatCpf(patient.cpf)}</dd></div>
-          <div><dt>Nascimento</dt><dd>{formatBirthDate(patient.birthDate)}</dd></div>
+          <div><dt>CPF</dt><dd>{patient.cpf ? formatCpf(patient.cpf) : 'Não informado'}</dd></div>
+          <div><dt>Nascimento</dt><dd>{patient.birthDate ? `${formatIsoDate(patient.birthDate)} (${ageFromIsoDate(patient.birthDate)} anos)` : 'Não informado neste resumo'}</dd></div>
         </dl>
       </div>
       <div className="patient-context__actions">

@@ -1,52 +1,28 @@
-// Escolhe qual dashboard aparece conforme o perfil do usuário.
-
-import { useEffect, useState } from 'react';
-import { canAccessSchedulingDashboard, canViewGuideQueue } from '../auth/authorization';
 import type { AuthUser } from '../auth/types';
+import { canCreatePatient, canScheduleGuides } from '../auth/authorization';
+import type { Route } from '../../app/routes';
+import { useDashboardView } from './hooks/useDashboardView';
 import { SchedulingDashboard } from './SchedulingDashboard';
 import { DoctorDashboard } from './DoctorDashboard';
 import './DashboardPage.css';
 
 interface DashboardPageProps {
   user: AuthUser | null;
+  route: Route;
+  onNavigate: (path: string) => void;
 }
 
-const GUIDE_QUEUE_HASH = '#fila-de-guias';
-
-export function DashboardPage({ user }: DashboardPageProps) {
-  const isSchedulingProfile = canAccessSchedulingDashboard(user?.perfil);
-
-  // Alguns perfis podem alternar entre o atendimento e a fila de guias.
-  const canToggleQueue = !isSchedulingProfile && canViewGuideQueue(user?.perfil);
-  const [queueRequested, setQueueRequested] = useState(
-    () => window.location.hash === GUIDE_QUEUE_HASH,
-  );
-
-  useEffect(() => {
-    if (!canToggleQueue) return;
-
-    function syncWithHash() {
-      setQueueRequested(window.location.hash === GUIDE_QUEUE_HASH);
-    }
-
-    window.addEventListener('hashchange', syncWithHash);
-    return () => window.removeEventListener('hashchange', syncWithHash);
-  }, [canToggleQueue]);
-
-  useEffect(() => {
-    if (!queueRequested) return;
-
-    requestAnimationFrame(() => {
-      document.getElementById('fila-de-guias')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    });
-  }, [queueRequested]);
-
-  if (isSchedulingProfile || (canToggleQueue && queueRequested)) {
-    return <SchedulingDashboard />;
+export function DashboardPage({ user, route, onNavigate }: DashboardPageProps) {
+  const { showSchedulingDashboard } = useDashboardView(user, route);
+  if (showSchedulingDashboard) {
+    return (
+      <SchedulingDashboard
+        onNavigate={onNavigate}
+        canRegisterPatient={canCreatePatient(user?.perfil)}
+        canScheduleGuides={canScheduleGuides(user?.perfil)}
+      />
+    );
   }
 
-  return <DoctorDashboard />;
+  return <DoctorDashboard route={route} onNavigate={onNavigate} />;
 }

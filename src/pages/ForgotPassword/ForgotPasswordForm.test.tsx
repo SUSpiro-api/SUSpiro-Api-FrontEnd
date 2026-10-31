@@ -18,9 +18,9 @@ describe('ForgotPasswordForm', () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<ForgotPasswordForm onBack={vi.fn()} onSubmit={onSubmit} />);
 
-    fireEvent.change(screen.getByLabelText('CPF'), { target: { value: '529.982.247-25' } });
+    fireEvent.change(screen.getByLabelText('CPF'), { target: { value: '111.444.777-35' } });
     fireEvent.submit(screen.getByRole('form', { name: 'Recuperação de senha' }));
 
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith('529.982.247-25'));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith('111.444.777-35'));
   });
 });

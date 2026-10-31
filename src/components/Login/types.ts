@@ -1,5 +1,3 @@
-// Define os tipos usados pelos componentes de login.
-
 import type { AuthService, LoginFormValues } from '../../features/auth/types';
 
 export type { LoginFormValues };

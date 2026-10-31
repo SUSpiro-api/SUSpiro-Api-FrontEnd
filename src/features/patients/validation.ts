@@ -1,5 +1,3 @@
-// Confere os dados do cidadão antes de enviar o cadastro.
-
 import { isValidCpf } from '../../utils/cpf';
 
 export const NOME_MAX_LENGTH = 150;
@@ -59,12 +57,24 @@ export function validateDataNascimento(value: string, now: Date = new Date()): s
   return '';
 }
 
+export function validateConvenio(value: string): string {
+  return value.trim().length > 120 ? 'O convênio deve ter no máximo 120 caracteres.' : '';
+}
+
+export function validateEmailPaciente(value: string): string {
+  const email = value.trim();
+  if (!email) return 'Informe um e-mail para recuperação de senha.';
+  if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return 'Informe um e-mail válido.';
+  }
+  return '';
+}
+
+// Regra legada mantida para consumidores antigos; o formulário atual utiliza convênio.
 export function validateNumeroSus(value: string): string {
   const numeroSus = value.replace(/\D/g, '');
-
   if (!numeroSus) return 'Informe o número do CNS.';
   if (numeroSus.length !== 15) return 'O CNS deve conter 15 dígitos.';
-
   return '';
 }
 
@@ -78,4 +88,21 @@ export function validateTelefone(value: string): string {
   }
 
   return '';
+}
+
+
+export function validateCepPaciente(value: string): string {
+  const cep = value.replace(/\D/g, '');
+  return cep.length === 8 ? '' : 'Informe um CEP válido com 8 dígitos.';
+}
+
+export function validateEnderecoObrigatorio(value: string, rotulo: string, max = 180): string {
+  const texto = value.trim();
+  if (!texto) return `Informe ${rotulo}.`;
+  if (texto.length > max) return `${rotulo} deve ter no máximo ${max} caracteres.`;
+  return '';
+}
+
+export function validateEstadoPaciente(value: string): string {
+  return /^[A-Za-z]{2}$/.test(value.trim()) ? '' : 'Informe a sigla do estado com 2 letras.';
 }

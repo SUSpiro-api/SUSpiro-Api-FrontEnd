@@ -1,0 +1,32 @@
+[data-theme='escuro'] {
+  color-scheme: dark;
+  --color-bg-page: #101820;
+  --color-surface: #17232d;
+  --color-surface-subtle: #1d2b36;
+  --color-surface-tint: #20384f;
+  --color-border-tint: #365777;
+  --color-text: #edf3f5;
+  --color-text-secondary: #c0cdd2;
+  --color-text-muted: #91a3ab;
+  --color-action: #1d6eb5;
+  --color-action-hover: #1c65a4;
+  --color-action-active: #175b93;
+  --color-text-on-action: #ffffff;
+  --color-link: #8bbef0;
+  --color-border: #2d3d49;
+  --color-border-strong: #647984;
+  --color-focus: #8bbef0;
+  --color-danger: #ff9188;
+  --color-danger-surface: #3a2528;
+  --color-danger-border: #704047;
+  --color-success: #7bd5a4;
+  --color-success-surface: #20392f;
+  --color-success-border: #385e4b;
+  --color-warning: #eec77d;
+  --color-warning-surface: #3b3221;
+  --color-warning-border: #685532;
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, .22);
+  --shadow-card-hover: 0 5px 16px rgba(0, 0, 0, .3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, .24);
+  --shadow-lg: 0 18px 44px rgba(0, 0, 0, .4);
+}

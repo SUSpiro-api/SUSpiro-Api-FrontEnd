@@ -1,5 +1,3 @@
-// Reúne os componentes que podem ser importados desta pasta.
-
 export { Login } from './Login';
 export { BrandPanel } from './Login/BrandPanel';
 export { AppShell } from './layout/AppShell';

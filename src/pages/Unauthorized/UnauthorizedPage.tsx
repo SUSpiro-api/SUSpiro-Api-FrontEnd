@@ -1,4 +1,3 @@
-// Mostra um aviso quando o usuário não pode acessar uma tela.
 
 import { MaterialIcon } from '../../components/icons';
 import { Button } from '../../components/ui/Button';

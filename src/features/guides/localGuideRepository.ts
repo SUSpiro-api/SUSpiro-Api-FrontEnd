@@ -1,19 +1,18 @@
-// Guarda guias no navegador para usar o modo local.
-
 import { browserStorage } from '../../utils/storage';
+import { GUIDES_STORAGE_KEY, notifyGuidesUpdated } from './guideEvents';
 import type { GuideRepository } from './guideRepository';
 import type { CreateGuideInput, Guide, GuideActor, ScheduleGuideInput } from './types';
 
-const STORAGE_KEY = 'suspiro.frontend.guias';
+const STORAGE_KEY = GUIDES_STORAGE_KEY;
 
-function readGuides(): Guide[] {
+export function readLocalGuides(): Guide[] {
   const guides = browserStorage.get<unknown>(STORAGE_KEY);
   return Array.isArray(guides) ? guides as Guide[] : [];
 }
 
-function writeGuides(guides: Guide[]): void {
+export function writeLocalGuides(guides: Guide[]): void {
   browserStorage.set(STORAGE_KEY, guides);
-  window.dispatchEvent(new CustomEvent('suspiro:guides-updated'));
+  notifyGuidesUpdated();
 }
 
 function nextGuideId(guides: Guide[]): number {
@@ -22,8 +21,14 @@ function nextGuideId(guides: Guide[]): number {
 }
 
 export class LocalGuideRepository implements GuideRepository {
+  private readonly markPendingSync: boolean;
+
+  constructor(markPendingSync = false) {
+    this.markPendingSync = markPendingSync;
+  }
+
   async create(input: CreateGuideInput, actor: GuideActor): Promise<Guide> {
-    const guides = readGuides();
+    const guides = readLocalGuides();
     const guide: Guide = {
       id: nextGuideId(guides),
       ...input,
@@ -38,18 +43,25 @@ export class LocalGuideRepository implements GuideRepository {
       agendadoPorId: null,
       agendadoPorNome: null,
       criadoEm: new Date().toISOString(),
+      ...(this.markPendingSync ? { sincronizacaoPendente: true } : {}),
     };
 
-    writeGuides([guide, ...guides]);
+    writeLocalGuides([guide, ...guides]);
     return guide;
   }
 
   async listByRequester(actorId: number): Promise<Guide[]> {
-    return readGuides().filter((guide) => guide.solicitanteId === actorId);
+    return readLocalGuides().filter((guide) => guide.solicitanteId === actorId);
+  }
+
+  async listByPatient(patientId: string): Promise<Guide[]> {
+    return readLocalGuides()
+      .filter((guide) => String(guide.pacienteId) === String(patientId))
+      .sort((first, second) => second.criadoEm.localeCompare(first.criadoEm) || second.id - first.id);
   }
 
   async listPending(): Promise<Guide[]> {
-    return readGuides()
+    return readLocalGuides()
       .filter((guide) => guide.status === 'AGUARDANDO_AGENDAMENTO')
       .sort((a, b) => {
         if (a.prioridade !== b.prioridade) return a.prioridade === 'URGENTE' ? -1 : 1;
@@ -58,21 +70,30 @@ export class LocalGuideRepository implements GuideRepository {
   }
 
   async schedule(id: number, input: ScheduleGuideInput, actor: GuideActor): Promise<Guide> {
-    const guides = readGuides();
+    const guides = readLocalGuides();
     const index = guides.findIndex((guide) => guide.id === id);
     if (index < 0) throw new Error('Guia não encontrada neste navegador.');
+
+    if (!input.estabelecimentoNome.trim() || !input.estabelecimentoEndereco.trim()
+        || !input.estabelecimentoCidade.trim() || input.estabelecimentoEstado.trim().length !== 2) {
+      throw new Error('Informe a unidade e o endereço completo do atendimento.');
+    }
 
     const updated = {
       ...guides[index],
       status: 'AGENDADO' as const,
       dataAgendamento: input.dataAgendamento,
       horaAgendamento: input.horaAgendamento,
+      estabelecimentoNome: input.estabelecimentoNome.trim(),
+      estabelecimentoEndereco: input.estabelecimentoEndereco.trim(),
+      estabelecimentoCidade: input.estabelecimentoCidade.trim(),
+      estabelecimentoEstado: input.estabelecimentoEstado.trim().toUpperCase(),
       agendadoPorId: actor.id,
       agendadoPorNome: actor.name,
     };
 
     guides[index] = updated;
-    writeGuides(guides);
+    writeLocalGuides(guides);
     return updated;
   }
 }

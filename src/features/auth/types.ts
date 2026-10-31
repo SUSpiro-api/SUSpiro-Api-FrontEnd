@@ -1,17 +1,20 @@
-// Define os tipos usados no login e nos dados do usuário.
-
 export type PerfilUsuario =
   | 'SUPER_ADMIN'
-  | 'ADMIN'
+  | 'GERENTE'
   | 'MEDICO'
   | 'ENFERMEIRO'
-  | 'RECEPCIONISTA'
-  | 'USUARIO';
+  | 'ATENDENTE'
+  | 'PACIENTE';
 
 export interface AuthUser {
+  /** Identificador interno do usuário; quando ausente, usa o subject do token. */
+  id?: string;
   sub: string;
   nome?: string;
   perfil?: PerfilUsuario;
+  cpfMascarado?: string;
+  sexo?: string | null;
+  registroProfissional?: string | null;
 }
 
 export interface LoginFormValues {
@@ -37,7 +40,12 @@ export type AuthErrorCode =
   | 'NOT_CONFIGURED'
   | 'SESSAO_EXPIRADA'
   | 'NOT_AVAILABLE'
-  | 'UNKNOWN';
+  | 'UNKNOWN'
+  | 'FORBIDDEN'
+  | 'CONFLICT'
+  | 'NOT_FOUND'
+  | 'RATE_LIMITED'
+  | 'SERVER';
 
 export class AuthError extends Error {
   readonly code: AuthErrorCode;

@@ -1,13 +1,12 @@
-// Cria um campo para digitar senha.
 
-import { useState } from 'react';
+import { usePasswordVisibility } from '../../hooks/usePasswordVisibility';
 import { TextField, type TextFieldProps } from './TextField';
 import { MaterialIcon } from '../icons';
 
 export type PasswordFieldProps = Omit<TextFieldProps, 'type' | 'startIcon' | 'endSlot'>;
 
 export function PasswordField(props: PasswordFieldProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const { isVisible, toggleVisibility } = usePasswordVisibility();
 
   return (
     <TextField
@@ -18,7 +17,7 @@ export function PasswordField(props: PasswordFieldProps) {
         <button
           type="button"
           className="ui-icon-button"
-          onClick={() => setIsVisible((previous) => !previous)}
+          onClick={toggleVisibility}
           aria-label={isVisible ? 'Ocultar senha' : 'Mostrar senha'}
           aria-pressed={isVisible}
         >

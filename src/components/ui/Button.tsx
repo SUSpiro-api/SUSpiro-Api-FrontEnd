@@ -1,5 +1,3 @@
-// Cria um botão com os estilos padrão do sistema.
-
 import type { ButtonHTMLAttributes } from 'react';
 import './ui.css';
 

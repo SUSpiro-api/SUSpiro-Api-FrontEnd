@@ -1,5 +1,3 @@
-// Faz as chamadas para a API e trata as respostas.
-
 import { AUTH_EXPIRED_EVENT } from '../features/auth/session';
 import { clearToken, getToken } from '../features/auth/token';
 import { env } from '../config/env';
@@ -8,6 +6,9 @@ export interface ApiErrorBody {
   message?: string;
   mensagem?: string;
   code?: string;
+  codigo?: string;
+  erros?: Record<string, string> | string[];
+  errors?: Record<string, string> | string[];
 }
 
 export interface RequestOptions extends RequestInit {
@@ -41,23 +42,42 @@ function cleanValidationMessage(message: string): string {
 
 async function parseError(response: Response): Promise<ApiError> {
   let body: ApiErrorBody = {};
-
-  // A resposta pode vir vazia ou sem JSON.
   try {
     body = (await response.json()) as ApiErrorBody;
   } catch {
-
+    // Erros de gateways/proxies podem não conter JSON.
   }
 
-  const serverMessage = body.message ?? body.mensagem;
-  const message = serverMessage && response.status === 400
-    ? cleanValidationMessage(serverMessage)
-    : serverMessage;
+  const validation = body.erros ?? body.errors;
+  const validationMessages = Array.isArray(validation)
+    ? validation.filter((item): item is string => typeof item === 'string')
+    : validation && typeof validation === 'object'
+      ? Object.values(validation).filter((item): item is string => typeof item === 'string')
+      : [];
+  const baseMessage = body.message ?? body.mensagem;
+  const cleanedBaseMessage = baseMessage && response.status === 400 ? cleanValidationMessage(baseMessage) : baseMessage?.trim();
+  const usefulBaseMessage = cleanedBaseMessage && !['Dados inválidos', 'Bad Request'].includes(cleanedBaseMessage)
+    ? cleanedBaseMessage
+    : '';
+  const message = [usefulBaseMessage, ...validationMessages].filter(Boolean).join(' ');
 
+  const fallbackMessages: Record<number, string> = {
+    400: 'Os dados enviados são inválidos. Confira os campos e tente novamente.',
+    401: 'Sua autenticação não foi aceita. Confira os dados de acesso ou entre novamente.',
+    403: 'Você não tem permissão para realizar esta operação.',
+    404: 'O recurso solicitado não foi encontrado.',
+    409: 'A operação conflita com um registro existente ou com o estado atual do recurso.',
+    422: 'Os dados informados não atendem às regras necessárias.',
+    429: 'Muitas tentativas em pouco tempo. Aguarde e tente novamente.',
+    500: 'O servidor encontrou um erro interno. Tente novamente mais tarde.',
+    502: 'O serviço está temporariamente indisponível.',
+    503: 'O serviço está temporariamente indisponível.',
+    504: 'O servidor demorou demais para responder. Tente novamente.',
+  };
   return new ApiError(
-    message || 'Não foi possível concluir a solicitação.',
+    message || fallbackMessages[response.status] || 'Não foi possível concluir a solicitação.',
     response.status,
-    body.code,
+    body.code ?? body.codigo,
   );
 }
 
@@ -68,26 +88,8 @@ function shouldRetry(method: string, error: unknown): boolean {
   return error instanceof TypeError;
 }
 
-function readCookie(name: string): string | null {
-  if (typeof document === 'undefined') return null;
-  const prefix = `${encodeURIComponent(name)}=`;
-  const part = document.cookie.split('; ').find((item) => item.startsWith(prefix));
-  if (!part) return null;
-  const value = part.slice(prefix.length);
-  try {
-    return decodeURIComponent(value);
-  } catch {
-    return value;
-  }
-}
-
-function csrfToken(): string | null {
-  return env.authMode === 'cookie' ? readCookie(env.csrfCookieName) : null;
-}
-
-function requestCredentials(includeAuth: boolean): RequestCredentials {
-  if (env.authMode === 'cookie') return 'include';
-  return includeAuth ? 'same-origin' : 'same-origin';
+function requestCredentials(): RequestCredentials {
+  return 'same-origin';
 }
 
 function delay(attempt: number, signal?: AbortSignal | null): Promise<void> {
@@ -119,11 +121,9 @@ async function request<T>(path: string, options: RequestOptions = {}, includeAut
   const retries = configuredRetries ?? DEFAULT_RETRIES;
   const cacheTtlMs = configuredCacheTtlMs ?? 0;
 
-  // No modo cookie, não guardamos dados privados nesse cache.
-  const canUseMemoryCache = method === 'GET' && cacheTtlMs > 0 &&
-    (!includeAuth || env.authMode === 'legacy-bearer-memory');
-  const cacheScope = includeAuth ? `auth:${getToken() ?? 'anonymous'}` : 'public';
-  const cacheKey = `${cacheScope}:${method}:${path}`;
+  // Dados autenticados não entram no cache em memória.
+  const canUseMemoryCache = method === 'GET' && cacheTtlMs > 0 && !includeAuth;
+  const cacheKey = `${method}:${path}`;
 
   if (canUseMemoryCache) {
     const cached = GET_CACHE.get(cacheKey);
@@ -133,19 +133,15 @@ async function request<T>(path: string, options: RequestOptions = {}, includeAut
 
   for (let attempt = 0; attempt <= retries; attempt += 1) {
     try {
-      const token = env.authMode === 'legacy-bearer-memory' && includeAuth ? getToken() : null;
-      const csrf = includeAuth && method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS'
-        ? csrfToken()
-        : null;
+      const token = includeAuth ? getToken() : null;
 
       const response = await fetch(`${env.apiUrl}${path}`, {
         ...fetchOptions,
-        credentials: fetchOptions.credentials ?? requestCredentials(includeAuth),
+        credentials: fetchOptions.credentials ?? requestCredentials(),
         headers: {
           Accept: 'application/json',
           ...(options.body ? { 'Content-Type': 'application/json' } : {}),
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {}),
           ...options.headers,
         },
       });
@@ -180,10 +176,7 @@ async function request<T>(path: string, options: RequestOptions = {}, includeAut
       }
 
       if (error instanceof ApiError) {
-        const isSessionValidationRequest = path === env.authSessionPath;
-        const isLegacyAuthMode = env.authMode === 'legacy-bearer-memory';
-
-        if (includeAuth && error.status === 401 && (isSessionValidationRequest || isLegacyAuthMode)) {
+        if (includeAuth && error.status === 401) {
           clearToken();
           window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
           throw new ApiError(

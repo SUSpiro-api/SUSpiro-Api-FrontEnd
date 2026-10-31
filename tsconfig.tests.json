@@ -4,5 +4,6 @@
     "noEmit": true,
     "allowJs": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"],
+  "exclude": []
 }

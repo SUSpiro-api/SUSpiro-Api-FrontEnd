@@ -1,6 +1,6 @@
-// Cria o campo de senha usado no login.
 
-import { useState, type InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes } from 'react';
+import { usePasswordVisibility } from '../../../hooks/usePasswordVisibility';
 import { TextField } from './TextField';
 import { MaterialIcon } from '../../icons';
 
@@ -10,7 +10,7 @@ export interface PasswordFieldProps
 }
 
 export function PasswordField({ label, ...inputProps }: PasswordFieldProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const { isVisible, toggleVisibility } = usePasswordVisibility();
 
   return (
     <TextField
@@ -21,7 +21,7 @@ export function PasswordField({ label, ...inputProps }: PasswordFieldProps) {
         <button
           type="button"
           className="login-icon-button"
-          onClick={() => setIsVisible((previous) => !previous)}
+          onClick={toggleVisibility}
           aria-label={isVisible ? 'Ocultar senha' : 'Mostrar senha'}
           aria-pressed={isVisible}
         >

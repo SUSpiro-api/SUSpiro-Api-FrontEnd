@@ -3,8 +3,8 @@ import { maskCns, maskCpf } from './mask';
 
 describe('maskCpf', () => {
   it('shows only the last 2 digits', () => {
-    expect(maskCpf('52998224725')).toBe('•••.•••.•••-25');
-    expect(maskCpf('529.982.247-25')).toBe('•••.•••.•••-25');
+    expect(maskCpf('11144477735')).toBe('•••.•••.•••-25');
+    expect(maskCpf('111.444.777-35')).toBe('•••.•••.•••-25');
   });
 
   it('returns an empty string when there is no complete CPF', () => {

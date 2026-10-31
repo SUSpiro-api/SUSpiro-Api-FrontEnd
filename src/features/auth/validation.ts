@@ -1,4 +1,3 @@
-// Confere os dados informados no login e na recuperação de senha.
 
 import { isValidCpf } from '../../utils/cpf';
 

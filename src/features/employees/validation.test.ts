@@ -1,5 +1,3 @@
-// Testa as regras de validação dos funcionários.
-
 import { describe, expect, it } from 'vitest';
 import {
   validateCpfFuncionario,
@@ -37,7 +35,7 @@ describe('validateCpfFuncionario', () => {
 
   it('accepts a valid CPF', () => {
 
-    expect(validateCpfFuncionario('529.982.247-25')).toBe('');
+    expect(validateCpfFuncionario('111.444.777-35')).toBe('');
   });
 });
 

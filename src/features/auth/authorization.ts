@@ -1,9 +1,7 @@
-// Define quais telas cada perfil pode acessar.
-
 import type { PerfilUsuario } from './types';
 
 export function isAdmin(perfil?: PerfilUsuario | null): boolean {
-  return perfil === 'ADMIN' || perfil === 'SUPER_ADMIN';
+  return perfil === 'GERENTE' || perfil === 'SUPER_ADMIN';
 }
 
 export function canCreateAdmin(perfil?: PerfilUsuario | null): boolean {
@@ -13,21 +11,30 @@ export function canCreateAdmin(perfil?: PerfilUsuario | null): boolean {
 export function canCreatePatient(perfil?: PerfilUsuario | null): boolean {
   return [
     'SUPER_ADMIN',
-    'ADMIN',
+    'GERENTE',
     'MEDICO',
     'ENFERMEIRO',
-    'RECEPCIONISTA',
+    'ATENDENTE',
   ].includes(perfil ?? '');
 }
 
 export function canAccessProfessionalDashboard(perfil?: PerfilUsuario | null): boolean {
-  return ['MEDICO', 'ENFERMEIRO', 'RECEPCIONISTA'].includes(perfil ?? '') || isAdmin(perfil);
+  return ['MEDICO', 'ENFERMEIRO', 'ATENDENTE'].includes(perfil ?? '') || isAdmin(perfil);
 }
 
 export function canAccessSchedulingDashboard(perfil?: PerfilUsuario | null): boolean {
-  return ['ENFERMEIRO', 'RECEPCIONISTA'].includes(perfil ?? '');
+  return ['ATENDENTE', 'ENFERMEIRO', 'GERENTE'].includes(perfil ?? '');
 }
 
 export function canViewGuideQueue(perfil?: PerfilUsuario | null): boolean {
-  return canAccessSchedulingDashboard(perfil) || isAdmin(perfil);
+  return perfil === 'MEDICO' || perfil === 'ATENDENTE' || perfil === 'ENFERMEIRO' || isAdmin(perfil);
+}
+
+export function canScheduleGuides(perfil?: PerfilUsuario | null): boolean {
+  return perfil === 'ATENDENTE' || perfil === 'ENFERMEIRO' || isAdmin(perfil);
+}
+
+// Contas sem perfil clínico são de pacientes: veem a própria área de saúde.
+export function isPatient(perfil?: PerfilUsuario | null): boolean {
+  return perfil === 'PACIENTE';
 }

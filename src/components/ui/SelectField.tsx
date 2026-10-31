@@ -1,5 +1,3 @@
-// Cria uma lista de opções para usar nos formulários.
-
 import { useId, type SelectHTMLAttributes } from 'react';
 import './ui.css';
 
@@ -25,7 +23,7 @@ export function SelectField({ label, hint, id, children, ...selectProps }: Selec
         </p>
       )}
 
-      <div className="ui-field__control">
+      <div className="ui-field__control ui-field__control--select">
         <select
           id={selectId}
           className="ui-field__input ui-field__select"

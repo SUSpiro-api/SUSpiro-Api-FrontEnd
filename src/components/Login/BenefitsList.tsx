@@ -1,5 +1,3 @@
-// Mostra os benefícios apresentados na tela de login.
-
 import { MaterialIcon } from '../icons';
 
 const BENEFITS: readonly string[] = [

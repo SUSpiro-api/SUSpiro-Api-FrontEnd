@@ -13,6 +13,7 @@ function tokenFor(sub: string, nome: string, perfil = 'MEDICO'): string {
 const guideService = createGuideService(new LocalGuideRepository());
 const createGuide = guideService.create;
 const listMyGuides = guideService.listMy;
+const listPatientGuides = guideService.listByPatient;
 const listPendingGuides = guideService.listPending;
 const scheduleGuide = guideService.schedule;
 
@@ -25,9 +26,9 @@ describe('guides application and repository', () => {
 
   it('persiste a especialidade da consulta e coloca a guia na fila', async () => {
     const result = await createGuide({
-      pacienteId: 1,
-      pacienteNome: 'Paciente Teste',
-      pacienteCpf: '52998224725',
+      pacienteId: '08c1f5ab-1f4d-4c79-8bd8-a7a1c91d0df1',
+      pacienteNome: 'Pessoa Sintética',
+      pacienteCpf: '11144477735',
       tipo: 'CONSULTA',
       especialidade: 'Cardiologia',
       dataSolicitada: '2026-10-10',
@@ -38,27 +39,33 @@ describe('guides application and repository', () => {
     expect(result.especialidade).toBe('Cardiologia');
     expect((await listMyGuides())[0].solicitanteNome).toBe('Dr. Teste');
     expect((await listPendingGuides())).toHaveLength(1);
+    expect((await listPatientGuides('08c1f5ab-1f4d-4c79-8bd8-a7a1c91d0df1')).map((guide) => guide.id)).toContain(result.id);
   });
 
-  it('permite à recepção/enfermagem alterar a guia para agendada', async () => {
+  it('permite à recepção alterar a guia para agendada', async () => {
     const created = await createGuide({
-      pacienteId: 1,
-      pacienteNome: 'Paciente Teste',
-      pacienteCpf: '52998224725',
+      pacienteId: '08c1f5ab-1f4d-4c79-8bd8-a7a1c91d0df1',
+      pacienteNome: 'Pessoa Sintética',
+      pacienteCpf: '11144477735',
       tipo: 'EXAME',
       detalhe: 'Hemograma',
       dataSolicitada: '2026-10-10',
       prioridade: 'NORMAL',
     });
 
-    setToken(tokenFor('8', 'Recepção SUS', 'RECEPCIONISTA'));
+    setToken(tokenFor('8', 'Recepção SUS', 'ATENDENTE'));
     const scheduled = await scheduleGuide(created.id, {
       dataAgendamento: '2026-10-11',
       horaAgendamento: '08:30',
+      estabelecimentoNome: 'Unidade de Saúde Central',
+      estabelecimentoEndereco: 'Rua das Palmeiras, 120',
+      estabelecimentoCidade: 'Cotia',
+      estabelecimentoEstado: 'SP',
     });
 
     expect(scheduled.status).toBe('AGENDADO');
     expect(scheduled.agendadoPorNome).toBe('Recepção SUS');
+    expect(scheduled.estabelecimentoNome).toBe('Unidade de Saúde Central');
     expect(await listPendingGuides()).toHaveLength(0);
   });
 });

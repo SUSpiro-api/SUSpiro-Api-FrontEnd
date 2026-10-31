@@ -20,7 +20,7 @@
   background: var(--color-surface);
   color: var(--color-text);
   text-decoration: none;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-card);
   transition: border-color var(--duration-fast) var(--ease-standard),
     box-shadow var(--duration-fast) var(--ease-standard);
 }
@@ -40,12 +40,18 @@
   border-radius: var(--radius-md);
   background: var(--color-surface-tint);
   color: var(--color-action);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.action-card:hover .action-card__icon {
+  background: var(--color-surface);
 }
 
 .action-card__title {
   font-size: var(--text-lg);
   font-weight: var(--weight-bold);
   line-height: var(--leading-snug);
+  letter-spacing: -0.01em;
 }
 
 .action-card__text {
@@ -63,4 +69,12 @@
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-link);
+}
+
+.action-card__cta svg {
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.action-card:hover .action-card__cta svg {
+  transform: translateX(3px);
 }

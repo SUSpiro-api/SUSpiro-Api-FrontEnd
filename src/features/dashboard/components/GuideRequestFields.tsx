@@ -1,5 +1,3 @@
-// Mostra os campos usados para preencher uma guia.
-
 import type { ChangeEvent } from 'react';
 import type { ConsultationSpecialty } from '../../guides';
 import type { ScheduleType } from '../types';
@@ -49,10 +47,12 @@ export function GuideRequestFields(props: GuideRequestFieldsProps) {
       {type === 'consulta' && (
         <div className="ui-field">
           <label className="ui-field__label" htmlFor="schedule-consultation-specialty">Especialidade da consulta</label>
-          <select id="schedule-consultation-specialty" className="ui-field__input ui-field__select" value={specialty} onChange={clearOnChange(onSpecialty)} required>
-            <option value="" disabled>Selecione a especialidade</option>
-            {Object.entries(specialtyLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select>
+          <div className="ui-field__control ui-field__control--select">
+            <select id="schedule-consultation-specialty" className="ui-field__input ui-field__select" value={specialty} onChange={clearOnChange(onSpecialty)} required>
+              <option value="" disabled>Selecione a especialidade</option>
+              {Object.entries(specialtyLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </div>
           <p className="ui-field__hint">Informe a especialidade médica responsável pelo atendimento.</p>
         </div>
       )}
@@ -60,33 +60,39 @@ export function GuideRequestFields(props: GuideRequestFieldsProps) {
       {type === 'encaminhamento' && (
         <div className="ui-field">
           <label className="ui-field__label" htmlFor="schedule-detail">{detailLabels.encaminhamento}</label>
-          <select id="schedule-detail" className="ui-field__input ui-field__select" value={detail} onChange={clearOnChange(onDetail)} required>
-            <option value="" disabled>Selecione a especialidade</option>
-            {specialtyOptions.map((option) => <option key={option} value={option}>{option}</option>)}
-          </select>
+          <div className="ui-field__control ui-field__control--select">
+            <select id="schedule-detail" className="ui-field__input ui-field__select" value={detail} onChange={clearOnChange(onDetail)} required>
+              <option value="" disabled>Selecione a especialidade</option>
+              {specialtyOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+            </select>
+          </div>
         </div>
       )}
 
       {type === 'exame' && (
         <div className="ui-field">
           <label className="ui-field__label" htmlFor="schedule-detail">{detailLabels.exame}</label>
-          <select id="schedule-detail" className="ui-field__input ui-field__select" value={detail} onChange={clearOnChange(onDetail)} required>
-            <option value="" disabled>Selecione o exame</option>
-            {examGroups.map((group) => (
-              <optgroup key={group.label} label={group.label}>
-                {group.options.map((exam) => <option key={exam} value={exam}>{exam}</option>)}
-              </optgroup>
-            ))}
-          </select>
+          <div className="ui-field__control ui-field__control--select">
+            <select id="schedule-detail" className="ui-field__input ui-field__select" value={detail} onChange={clearOnChange(onDetail)} required>
+              <option value="" disabled>Selecione o exame</option>
+              {examGroups.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.options.map((exam) => <option key={exam} value={exam}>{exam}</option>)}
+                </optgroup>
+              ))}
+            </select>
+          </div>
         </div>
       )}
 
       <div className="ui-field">
         <label className="ui-field__label" htmlFor="schedule-priority">Prioridade</label>
-        <select id="schedule-priority" className="ui-field__input ui-field__select" value={priority} onChange={clearOnChange(onPriority)}>
-          <option value="normal">Normal</option>
-          <option value="urgente">Urgente</option>
-        </select>
+        <div className="ui-field__control ui-field__control--select">
+          <select id="schedule-priority" className="ui-field__input ui-field__select" value={priority} onChange={clearOnChange(onPriority)}>
+            <option value="normal">Normal</option>
+            <option value="urgente">Urgente</option>
+          </select>
+        </div>
       </div>
 
       <div className="ui-field schedule-form__full">

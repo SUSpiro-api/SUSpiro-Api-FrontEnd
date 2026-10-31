@@ -1,4 +1,3 @@
-// Controla a tela de login e o envio dos dados para autenticar.
 
 import { LoginPage } from '../../../pages/Login/LoginPage';
 import { authService } from '../service';
@@ -19,6 +18,8 @@ export function LoginFeature({
     const user = await authService.login(values);
     onLoginSuccess(user);
   };
+
+
 
   return (
     <LoginPage

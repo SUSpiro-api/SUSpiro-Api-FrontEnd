@@ -1,12 +1,12 @@
-// Mostra a confirmação do pedido de recuperação de senha.
 
 import { MaterialIcon } from '../../components/icons';
 
 interface ForgotPasswordSuccessProps {
   onBack: () => void;
+  mode?: 'request' | 'reset';
 }
 
-export function ForgotPasswordSuccess({ onBack }: ForgotPasswordSuccessProps) {
+export function ForgotPasswordSuccess({ onBack, mode = 'request' }: ForgotPasswordSuccessProps) {
   return (
     <article
       className="login-recovery login-recovery--success"
@@ -19,10 +19,12 @@ export function ForgotPasswordSuccess({ onBack }: ForgotPasswordSuccessProps) {
 
         <div className="login-success-card__body">
           <p id="recovery-success-title" className="login-success-card__title">
-            Verifique seu e-mail
+            {mode === 'reset' ? 'Senha alterada com sucesso' : 'Verifique seu e-mail'}
           </p>
           <p className="login-success-card__text">
-            Se o CPF estiver cadastrado, as instruções de redefinição foram enviadas para o e-mail associado.
+            {mode === 'reset'
+              ? 'Sua senha foi atualizada. Entre no SUSpiro usando a nova senha.'
+              : 'Se o CPF estiver cadastrado, enviaremos um link de redefinição para o e-mail associado. O link expira em 30 minutos.'}
           </p>
         </div>
       </div>

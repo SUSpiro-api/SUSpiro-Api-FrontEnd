@@ -1,5 +1,3 @@
-// Mostra os dados do paciente no formulário de guia.
-
 import { MaterialIcon } from '../../../components/icons';
 import { formatCpf } from '../../../utils/cpf';
 import type { Patient } from '../types';
@@ -16,7 +14,8 @@ interface PatientFieldsProps {
   onApplyCpf: () => void;
 }
 
-function formatBirthDate(date: string): string {
+function formatBirthDate(date?: string): string {
+  if (!date) return 'Não informado';
   return new Intl.DateTimeFormat('pt-BR').format(new Date(`${date}T12:00:00`));
 }
 

@@ -1,7 +1,5 @@
-// Monta os elementos principais da tela de login.
-
 import { authService as defaultAuthService } from '../../features/auth/service';
-import { useLoginForm } from '../../features/auth/useLoginForm';
+import { useLoginController } from '../../features/auth/useLoginController';
 import { BrandPanel } from './BrandPanel';
 import { LoginForm } from './LoginForm';
 import type { LoginProps } from './types';
@@ -13,19 +11,7 @@ export function Login({
   onCreateAccount,
   authService = defaultAuthService,
 }: LoginProps) {
-  const { values, setField, fieldErrors, validate, persistRememberedCpf } = useLoginForm();
-
-  const handleLogin = async () => {
-    if (!validate()) return;
-
-    if (onLogin) {
-      await onLogin({ cpf: values.cpf, password: values.password });
-    } else {
-      await authService.login({ cpf: values.cpf, password: values.password });
-    }
-
-    persistRememberedCpf();
-  };
+  const { values, setField, fieldErrors, handleLogin } = useLoginController({ onLogin, authService });
 
   return (
     <main className="login-page" aria-label="Página de acesso ao SUSpiro">

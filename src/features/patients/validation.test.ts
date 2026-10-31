@@ -1,5 +1,3 @@
-// Testa as regras de validação do cadastro de cidadão.
-
 import { describe, expect, it } from 'vitest';
 import {
   maxBirthDate,
@@ -27,7 +25,7 @@ describe('validações de cadastro de paciente', () => {
   it('valida o CPF do paciente', () => {
     expect(validateCpfPaciente('')).not.toBe('');
     expect(validateCpfPaciente('123.456.789-00')).not.toBe('');
-    expect(validateCpfPaciente('529.982.247-25')).toBe('');
+    expect(validateCpfPaciente('111.444.777-35')).toBe('');
   });
 
   it('valida a data de nascimento', () => {

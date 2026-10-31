@@ -1,5 +1,3 @@
-// Cria um controle para ligar ou desligar uma opção.
-
 import './ui.css';
 
 export interface ToggleProps {

@@ -1,7 +1,4 @@
-// Mostra os campos e botões do formulário de login.
-
-import { useState } from 'react';
-import { getLoginErrorMessage } from '../../features/auth/errorMessages';
+import { useLoginSubmission } from './hooks/useLoginSubmission';
 import { TextField } from './ui/TextField';
 import { PasswordField } from './ui/PasswordField';
 import { Toggle } from './ui/Toggle';
@@ -23,22 +20,7 @@ export function LoginForm({
   onForgotPassword,
   onCreateAccount,
 }: Props) {
-  const [formError, setFormError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setFormError('');
-    setIsSubmitting(true);
-
-    try {
-      await onSubmit(values);
-    } catch (error) {
-      setFormError(getLoginErrorMessage(error));
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const { formError, isSubmitting, handleSubmit } = useLoginSubmission(onSubmit);
 
   return (
     <article className="login-login-form" aria-labelledby="login-form-title">
@@ -51,7 +33,7 @@ export function LoginForm({
         </p>
       </header>
 
-      <form onSubmit={handleSubmit} noValidate aria-label="Formulário de autenticação">
+      <form onSubmit={(event) => void handleSubmit(event, values)} noValidate aria-label="Formulário de autenticação">
         <TextField
           label="CPF"
           placeholder="000.000.000-00"

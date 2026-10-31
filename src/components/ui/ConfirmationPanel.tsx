@@ -1,5 +1,3 @@
-// Mostra uma confirmação depois que uma ação termina.
-
 import { MaterialIcon } from '../icons';
 import { Button } from './Button';
 import './ui.css';

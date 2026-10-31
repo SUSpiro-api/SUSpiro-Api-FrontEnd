@@ -7,19 +7,14 @@ vi.mock('../../api/httpClient', () => ({ authenticatedFetch: vi.fn() }));
 describe('employee service', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('normalizes CPF and trims the name before sending', async () => {
-    vi.mocked(authenticatedFetch).mockResolvedValue({ id: 1, nome: 'Maria', cpf: '52998224725', perfil: 'MEDICO', ativo: true });
-
+  it('normalizes CPF and email and sends the manager-defined temporary password', async () => {
+    vi.mocked(authenticatedFetch).mockResolvedValue({ id: 1, nome: 'Maria', cpf: '11144477735', email: 'maria@example.com', perfil: 'MEDICO', ativo: true });
     await cadastrarFuncionario({
-      nome: ' Maria ',
-      cpf: '529.982.247-25',
-      senha: 'senha1234',
-      perfil: 'MEDICO',
+      nome: ' Maria ', cpf: '111.444.777-35', email: ' Maria@Example.com ', perfil: 'MEDICO', senhaTemporaria: 'TempSenha#2026',
     });
-
     expect(authenticatedFetch).toHaveBeenCalledWith('/usuarios', expect.objectContaining({
       method: 'POST',
-      body: JSON.stringify({ nome: 'Maria', cpf: '52998224725', senha: 'senha1234', perfil: 'MEDICO' }),
+      body: JSON.stringify({ nome: 'Maria', cpf: '11144477735', email: 'maria@example.com', perfil: 'MEDICO', senhaTemporaria: 'TempSenha#2026' }),
     }));
   });
 });

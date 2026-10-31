@@ -1,12 +1,10 @@
-// Transforma o nome do perfil em um texto para mostrar na tela.
-
 const PERFIL_LABELS: Record<string, string> = {
   SUPER_ADMIN: 'Super administrador',
-  ADMIN: 'Administrador',
+  GERENTE: 'Gerente',
   MEDICO: 'Médico',
   ENFERMEIRO: 'Enfermeiro',
-  RECEPCIONISTA: 'Recepcionista',
-  USUARIO: 'Usuário',
+  PACIENTE: 'Paciente',
+  ATENDENTE: 'Recepcionista',
 };
 
 export function perfilLabel(perfil?: string | null): string {

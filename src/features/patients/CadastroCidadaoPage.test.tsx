@@ -6,41 +6,33 @@ import * as service from './service';
 describe('CadastroCidadaoPage', () => {
   beforeEach(() => vi.restoreAllMocks());
 
-  it('confirms the registration with masked personal data and lets the user register another', async () => {
+  it('confirms registration and lets the user register another patient', async () => {
     vi.spyOn(service, 'cadastrarPaciente').mockResolvedValue({
-      id: 1,
-      nome: 'Maria da Silva',
-      cpf: '52998224725',
-      dataNascimento: '1990-05-20',
-      numeroSus: '123456789012345',
-      telefone: null,
-      criadoEm: '2026-09-29T10:00:00',
+      id: '08c1f5ab-1f4d-4c79-8bd8-a7a1c91d0df1',
+      nome: 'Maria da Silva', cpfMascarado: '•••.•••.•••-25', convenio: 'Plano Exemplo',
+      email: 'maria@example.com', criadoEm: '2026-09-29T10:00:00', contaCriada: true,
     });
     const onVoltar = vi.fn();
     render(<CadastroCidadaoPage onVoltar={onVoltar} />);
-    expect(screen.getByText('Todos os campos são obrigatórios, exceto o telefone.')).toBeInTheDocument();
-
+    expect(screen.queryByText(/O e-mail é obrigatório para recuperação de senha/)).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Nome completo'), { target: { value: 'Maria da Silva' } });
-    fireEvent.change(screen.getByLabelText('CPF'), { target: { value: '52998224725' } });
+    fireEvent.change(screen.getByLabelText('CPF'), { target: { value: '11144477735' } });
     fireEvent.change(screen.getByLabelText('Data de nascimento'), { target: { value: '1990-05-20' } });
-    fireEvent.change(screen.getByLabelText('Número do CNS'), { target: { value: '123456789012345' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Cadastrar cidadão' }));
+    fireEvent.change(screen.getByLabelText('Nome do convênio'), { target: { value: 'Plano Exemplo' } });
+    fireEvent.change(screen.getByLabelText('E-mail'), { target: { value: 'maria@example.com' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Cadastrar paciente' }));
 
-    expect(await screen.findByText('Cidadão cadastrado com sucesso')).toBeInTheDocument();
-    expect(screen.queryByText('Todos os campos são obrigatórios, exceto o telefone.')).not.toBeInTheDocument();
+    expect(await screen.findByText('Paciente cadastrado com sucesso')).toBeInTheDocument();
     expect(screen.getByText('Maria da Silva')).toBeInTheDocument();
     expect(screen.getByText('•••.•••.•••-25')).toBeInTheDocument();
-    expect(screen.getByText('•••••••••••2345')).toBeInTheDocument();
-    expect(screen.queryByText('52998224725')).not.toBeInTheDocument();
-    expect(screen.queryByText('123456789012345')).not.toBeInTheDocument();
+    expect(screen.getByText('Plano Exemplo')).toBeInTheDocument();
+    expect(screen.getByText('maria@example.com')).toBeInTheDocument();
+    expect(screen.queryByText('11144477735')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Voltar ao início' }));
     expect(onVoltar).toHaveBeenCalledTimes(1);
-
-    fireEvent.click(screen.getByRole('button', { name: 'Cadastrar outro cidadão' }));
-    await waitFor(() =>
-      expect(screen.getByRole('form', { name: 'Formulário de cadastro de cidadão' })).toBeInTheDocument(),
-    );
+    fireEvent.click(screen.getByRole('button', { name: 'Cadastrar outro paciente' }));
+    await waitFor(() => expect(screen.getByRole('form', { name: 'Formulário de cadastro de paciente' })).toBeInTheDocument());
     expect(screen.getByLabelText('Nome completo')).toHaveValue('');
   });
 });

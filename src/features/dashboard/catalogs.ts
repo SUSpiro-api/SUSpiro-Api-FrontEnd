@@ -1,5 +1,3 @@
-// Guarda as opções usadas nos formulários do dashboard.
-
 export const specialtyOptions = [
   'Acupuntura',
   'Alergia e imunologia',

@@ -1,7 +1,3 @@
-/* Define o visual da tela de login. */
-
-@import './legacy-tokens.css';
-
 .login-page {
   min-height: 100svh;
   width: 100%;
@@ -189,8 +185,35 @@
   margin-bottom: var(--space-6);
 }
 
-.login-login-form__submit {
+.ui-button.ui-button--primary.login-login-form__submit {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  line-height: 1;
+  text-align: center;
+  box-sizing: border-box;
   margin-bottom: var(--space-4);
+  border: 1px solid #0b5aa8;
+  border-radius: var(--radius-md);
+  background: #0b5aa8;
+  color: #ffffff;
+  font-weight: 700;
+  opacity: 1;
+  visibility: visible;
+}
+
+.ui-button.ui-button--primary.login-login-form__submit:hover:not(:disabled) {
+  background: #084a8c;
+  border-color: #084a8c;
+}
+
+.ui-button.ui-button--primary.login-login-form__submit:disabled {
+  background: #0b5aa8;
+  color: #ffffff;
+  opacity: 0.65;
 }
 
 .login-login-form__footer-note {
@@ -341,4 +364,19 @@
     width: 28px;
     height: 28px;
   }
+}
+
+.first-access-form__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--space-4);
+}
+
+.first-access-form .ui-field {
+  margin-bottom: var(--space-4);
+}
+
+.first-access-form .ui-field__input {
+  width: 100%;
 }

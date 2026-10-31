@@ -1,5 +1,3 @@
-// Define os tipos de dados usados nas guias.
-
 export const GUIDE_TYPES = ['CONSULTA', 'RETORNO', 'EXAME', 'ENCAMINHAMENTO'] as const;
 export type GuideType = (typeof GUIDE_TYPES)[number];
 
@@ -12,7 +10,7 @@ export type GuideStatus = (typeof GUIDE_STATUSES)[number];
 export type ConsultationSpecialty = string;
 
 export interface CreateGuideInput {
-  pacienteId: number;
+  pacienteId: string;
   pacienteNome: string;
   pacienteCpf: string;
   tipo: GuideType;
@@ -25,7 +23,8 @@ export interface CreateGuideInput {
 
 export interface Guide {
   id: number;
-  pacienteId: number;
+  protocolo?: string | null;
+  pacienteId: string;
   pacienteNome: string;
   pacienteCpf: string;
   tipo: GuideType;
@@ -39,14 +38,24 @@ export interface Guide {
   solicitanteNome: string;
   dataAgendamento?: string | null;
   horaAgendamento?: string | null;
+  estabelecimentoNome?: string | null;
+  estabelecimentoEndereco?: string | null;
+  estabelecimentoCidade?: string | null;
+  estabelecimentoEstado?: string | null;
   agendadoPorId?: number | null;
   agendadoPorNome?: string | null;
   criadoEm: string;
+  /** true enquanto a guia só existe neste navegador e ainda não foi enviada ao backend. */
+  sincronizacaoPendente?: boolean;
 }
 
 export interface ScheduleGuideInput {
   dataAgendamento: string;
   horaAgendamento: string;
+  estabelecimentoNome: string;
+  estabelecimentoEndereco: string;
+  estabelecimentoCidade: string;
+  estabelecimentoEstado: string;
 }
 
 export interface GuideActor {

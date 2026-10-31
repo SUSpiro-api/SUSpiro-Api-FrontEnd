@@ -1,5 +1,3 @@
-// Mostra um campo de texto com instruções e erro, quando houver.
-
 import {
   forwardRef,
   useId,

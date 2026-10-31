@@ -1,11 +1,7 @@
-// Mostra e valida o formulário de recuperação de senha.
 
-import { useState } from 'react';
-import { validateResetCpf } from '../../features/auth/validation';
-import { getPasswordResetErrorMessage } from '../../features/auth/errorMessages';
+import { useForgotPasswordForm } from './hooks/useForgotPasswordForm';
 import { Button } from '../../components/Login/ui/Button';
 import { TextField } from '../../components/Login/ui/TextField';
-import { formatCpf } from '../../utils/cpf';
 
 interface ForgotPasswordFormProps {
   onBack: () => void;
@@ -13,30 +9,7 @@ interface ForgotPasswordFormProps {
 }
 
 export function ForgotPasswordForm({ onBack, onSubmit }: ForgotPasswordFormProps) {
-  const [cpf, setCpf] = useState('');
-  const [error, setError] = useState('');
-  const [formError, setFormError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const cpfError = validateResetCpf(cpf);
-    setError(cpfError);
-    setFormError('');
-
-    if (cpfError) return;
-
-    setIsSubmitting(true);
-
-    try {
-      await onSubmit(cpf);
-    } catch (submitError) {
-      setFormError(getPasswordResetErrorMessage(submitError));
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const form = useForgotPasswordForm({ onSubmit });
 
   return (
     <article className="login-recovery" aria-labelledby="forgot-password-title">
@@ -49,32 +22,28 @@ export function ForgotPasswordForm({ onBack, onSubmit }: ForgotPasswordFormProps
         </p>
       </header>
 
-      <form onSubmit={handleSubmit} noValidate aria-label="Recuperação de senha">
+      <form onSubmit={form.handleSubmit} noValidate aria-label="Recuperação de senha">
         <TextField
           label="CPF"
           placeholder="000.000.000-00"
           autoComplete="username"
           inputMode="numeric"
           maxLength={14}
-          value={cpf}
-          aria-invalid={Boolean(error)}
-          aria-describedby={error ? 'cpf-error' : undefined}
-          onChange={(event) => {
-            setCpf(formatCpf(event.target.value));
-            setError('');
-            setFormError('');
-          }}
+          value={form.cpf}
+          aria-invalid={Boolean(form.error)}
+          aria-describedby={form.error ? 'cpf-error' : undefined}
+          onChange={form.handleCpfChange}
         />
 
-        {error && (
+        {form.error && (
           <p id="cpf-error" className="login-field__error" role="alert">
-            {error}
+            {form.error}
           </p>
         )}
 
-        {formError && (
+        {form.formError && (
           <p className="login-form-error" role="alert">
-            {formError}
+            {form.formError}
           </p>
         )}
 
@@ -82,17 +51,17 @@ export function ForgotPasswordForm({ onBack, onSubmit }: ForgotPasswordFormProps
           type="submit"
           variant="primary"
           className="login-login-form__submit"
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
+          disabled={form.isSubmitting}
+          aria-busy={form.isSubmitting}
         >
-          {isSubmitting ? 'Enviando...' : 'Enviar instruções'}
+          {form.isSubmitting ? 'Enviando...' : 'Enviar instruções'}
         </Button>
 
         <button
           type="button"
           className="login-link login-link--button login-link--back"
           onClick={onBack}
-          disabled={isSubmitting}
+          disabled={form.isSubmitting}
         >
           Voltar para o login
         </button>

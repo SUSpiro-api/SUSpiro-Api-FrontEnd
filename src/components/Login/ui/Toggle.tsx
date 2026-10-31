@@ -1,5 +1,3 @@
-// Cria o controle de opção usado no login.
-
 import './ui.css';
 
 export interface ToggleProps {

@@ -1,5 +1,3 @@
-// Cuida da validade da sessão do usuário.
-
 import { clearToken, decodeToken, getToken } from './token';
 
 export const AUTH_EXPIRED_EVENT = 'suspiro:auth-expired';

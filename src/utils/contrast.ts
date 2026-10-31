@@ -1,5 +1,3 @@
-// Confere o contraste entre a cor do texto e a cor do fundo.
-
 function channel(value: number): number {
   const c = value / 255;
   return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;

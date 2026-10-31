@@ -1,5 +1,3 @@
-// Mostra a marca e o texto ao lado do formulário de login.
-
 import { LogoMark } from '../icons';
 import { BenefitsList } from './BenefitsList';
 import { HealthIllustration } from './HealthIllustration';

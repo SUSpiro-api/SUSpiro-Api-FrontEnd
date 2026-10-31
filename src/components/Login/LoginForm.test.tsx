@@ -38,10 +38,16 @@ describe('LoginForm', () => {
     expect(screen.getByLabelText('Senha de acesso')).toBeInTheDocument();
   });
 
+  it('does not show the patient birth-date password instruction on the login screen', () => {
+    renderForm();
+    expect(screen.queryByText(/Primeiro acesso de paciente/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/DDMMAAAA/i)).not.toBeInTheDocument();
+  });
+
   it('submits the values received from the container', async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     const values: LoginFormValues = {
-      cpf: '529.982.247-25',
+      cpf: '111.444.777-35',
       password: 'senha-segura',
       rememberCpf: true,
     };
@@ -54,7 +60,7 @@ describe('LoginForm', () => {
 
   it('displays a friendly error when submission fails', async () => {
     const onSubmit = vi.fn().mockRejectedValue(new Error('connection failed'));
-    const values: LoginFormValues = { ...initialValues, cpf: '529.982.247-25', password: 'senha-segura' };
+    const values: LoginFormValues = { ...initialValues, cpf: '111.444.777-35', password: 'senha-segura' };
 
     renderForm(onSubmit, values);
     fireEvent.submit(screen.getByRole('form', { name: 'Formulário de autenticação' }));

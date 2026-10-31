@@ -1,5 +1,3 @@
-// Esconde parte dos números pessoais antes de mostrá-los na tela.
-
 import { normalizeCpf } from './cpf';
 
 export function maskCpf(value: string): string {

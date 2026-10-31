@@ -1,5 +1,3 @@
-// Cria os campos de texto usados no login.
-
 import {
   forwardRef,
   useId,

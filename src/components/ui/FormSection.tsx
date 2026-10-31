@@ -1,5 +1,3 @@
-// Agrupa campos relacionados do formulário.
-
 import type { ReactNode } from 'react';
 import './ui.css';
 

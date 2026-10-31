@@ -1,5 +1,3 @@
-// Guarda os campos do login e confere se foram preenchidos corretamente.
-
 import { useCallback, useState } from 'react';
 import type { LoginFormValues } from './types';
 import { clearRememberedCpf, getRememberedCpf, saveRememberedCpf } from './storage';
@@ -24,10 +22,19 @@ export function useLoginForm() {
     value: LoginFormValues[K],
   ) => {
     setValues((previous) => ({ ...previous, [field]: value }));
+
+    // Salva/limpa o CPF no instante em que a opção é alterada; não depende do login dar certo.
+    if (field === 'rememberCpf') {
+      if (value === true) saveRememberedCpf(values.cpf.trim());
+      else clearRememberedCpf();
+    } else if (field === 'cpf' && values.rememberCpf) {
+      saveRememberedCpf(String(value).trim());
+    }
+
     if (field === 'cpf' || field === 'password') {
       setFieldErrors((previous) => ({ ...previous, [field]: undefined }));
     }
-  }, []);
+  }, [values.cpf, values.rememberCpf]);
 
   const validate = useCallback((): boolean => {
     const errors: LoginFieldErrors = {};

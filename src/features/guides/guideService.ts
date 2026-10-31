@@ -1,12 +1,10 @@
-// Organiza as ações de criar, listar e agendar guias.
-
 import { getCurrentUser } from '../auth/token';
 import type { GuideRepository } from './guideRepository';
 import type { CreateGuideInput, Guide, ScheduleGuideInput } from './types';
 
 export function currentGuideActor() {
   const user = getCurrentUser();
-  const id = Number(user?.sub);
+  const id = Number(user?.id ?? user?.sub);
   return {
     id: Number.isFinite(id) ? id : 0,
     name: user?.nome?.trim() || 'Profissional',
@@ -20,6 +18,9 @@ export function createGuideService(repository: GuideRepository) {
     },
     listMy(): Promise<Guide[]> {
       return repository.listByRequester(currentGuideActor().id);
+    },
+    listByPatient(patientId: string): Promise<Guide[]> {
+      return repository.listByPatient(patientId);
     },
     listPending(): Promise<Guide[]> {
       return repository.listPending();

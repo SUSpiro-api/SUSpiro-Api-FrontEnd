@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { authenticatedFetch, ApiError } from './httpClient';
+import { authenticatedFetch } from './httpClient';
 import { getToken, setToken, clearToken } from '../features/auth/token';
 
-describe('httpClient — compatibilidade com JWT em memória', () => {
+describe('httpClient — requisições autenticadas com JWT em memória', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     localStorage.clear();
@@ -14,7 +14,7 @@ describe('httpClient — compatibilidade com JWT em memória', () => {
     clearToken();
   });
 
-  it('envia Authorization Bearer para o backend legado e não exige cookie de sessão', async () => {
+  it('envia o token Bearer no cabeçalho Authorization', async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } }),
     );
@@ -41,17 +41,6 @@ describe('httpClient — compatibilidade com JWT em memória', () => {
     );
   });
 
-  it('não exige token CSRF quando está no modo JWT compatível', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } }),
-    );
-    vi.stubGlobal('fetch', fetchMock);
-    document.cookie = 'XSRF-TOKEN=csrf-123';
-
-    await authenticatedFetch('/pacientes', { method: 'POST', body: JSON.stringify({ nome: 'Teste' }) });
-
-    expect(fetchMock.mock.calls[0][1].headers).not.toHaveProperty('X-CSRF-TOKEN');
-  });
 
   it('encerra a sessão quando a API legada rejeita um JWT com 401', async () => {
     const listener = vi.fn();
@@ -70,14 +59,14 @@ describe('httpClient — compatibilidade com JWT em memória', () => {
     window.removeEventListener('suspiro:auth-expired', listener);
   });
 
-  it('encerra a sessão quando /auth/me retorna 401', async () => {
+  it('encerra a sessão quando /usuarios/me retorna 401', async () => {
     const listener = vi.fn();
     window.addEventListener('suspiro:auth-expired', listener);
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ mensagem: 'sessão inválida' }), { status: 401 }),
     ));
 
-    await expect(authenticatedFetch('/auth/me')).rejects.toMatchObject({
+    await expect(authenticatedFetch('/usuarios/me')).rejects.toMatchObject({
       status: 401,
       code: 'SESSAO_EXPIRADA',
     });
@@ -114,6 +103,29 @@ describe('httpClient — compatibilidade com JWT em memória', () => {
     await expect(authenticatedFetch('/pacientes')).rejects.toMatchObject({
       status: 400,
       message: 'O nome é obrigatório. A data de nascimento deve estar no passado.',
+    });
+  });
+
+
+  it('includes field-level validation details from the API 400 response', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(
+      JSON.stringify({ status: 400, mensagem: 'Dados inválidos', erros: { cpf: 'CPF inválido.', email: 'E-mail obrigatório.' } }),
+      { status: 400 },
+    )));
+    await expect(authenticatedFetch('/usuarios', { method: 'POST', body: '{}' })).rejects.toMatchObject({
+      status: 400,
+      message: 'CPF inválido. E-mail obrigatório.',
+    });
+  });
+
+  it('does not rewrite a 403 authorization error as invalid credentials', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(
+      JSON.stringify({ status: 403, mensagem: 'A senha provisória deve ser alterada.' }),
+      { status: 403 },
+    )));
+    await expect(authenticatedFetch('/guias')).rejects.toMatchObject({
+      status: 403,
+      message: 'A senha provisória deve ser alterada.',
     });
   });
 

@@ -5,15 +5,15 @@ import type { ClinicalRecord, Patient } from './types';
 
 const patient: Patient = {
   id: 1,
-  name: 'Paciente Teste SUSpiro',
-  cpf: '529.982.247-25',
+  name: 'João da Silva',
+  cpf: '111.444.777-35',
   birthDate: '1987-04-18',
 };
 
 const records: ClinicalRecord[] = [
   {
     id: 1,
-    patientId: 1,
+    patientId: '00000000-0000-4000-8000-000000000001',
     date: '2026-10-12',
     time: '09:00',
     type: 'consulta',
@@ -23,7 +23,7 @@ const records: ClinicalRecord[] = [
   },
   {
     id: 2,
-    patientId: 1,
+    patientId: '00000000-0000-4000-8000-000000000001',
     date: '2026-10-14',
     type: 'exame',
     title: 'Hemograma completo',
@@ -51,8 +51,8 @@ describe('ClinicalRecordList', () => {
   it('não repete o nome do paciente em cada linha: ele já está no título do cartão', () => {
     renderList();
 
-    expect(screen.getByText('Histórico de Paciente Teste SUSpiro')).toBeInTheDocument();
-    expect(screen.queryAllByText(/Paciente Teste SUSpiro ·/)).toHaveLength(0);
+    expect(screen.getByText('Histórico de João da Silva')).toBeInTheDocument();
+    expect(screen.queryAllByText(/João da Silva ·/)).toHaveLength(0);
     expect(screen.getByText(/Consulta · 12\/10\/2026 · 09:00/)).toBeInTheDocument();
     expect(screen.getByText('Jejum de 8 horas orientado.')).toBeInTheDocument();
   });

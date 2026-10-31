@@ -1,103 +1,84 @@
-// Pede para trocar a senha quando isso é necessário.
+// Modal obrigatório de primeiro acesso: não permite abrir o sistema sem trocar a senha inicial.
 
-import { useState, type FormEvent } from 'react';
-import { BrandPanel } from '../../../components/Login/BrandPanel';
-import { PasswordField } from '../../../components/ui/PasswordField';
+import type { PerfilUsuario } from '../types';
 import { Button } from '../../../components/ui/Button';
-import { ApiError, authenticatedFetch } from '../../../api/httpClient';
-import { setSenhaProvisoria } from '../token';
-import '../../../components/Login/Login.css';
+import { PasswordField } from '../../../components/ui/PasswordField';
+import { usePasswordChangeForm } from './hooks/usePasswordChangeForm';
+import '../weak-password/weak-password-notice.css';
 
 interface TrocaSenhaPageProps {
+  perfil?: PerfilUsuario;
   onConcluido: () => void;
   onSair: () => void;
 }
 
-export function TrocaSenhaPage({ onConcluido, onSair }: TrocaSenhaPageProps) {
-  const [senhaAtual, setSenhaAtual] = useState('');
-  const [novaSenha, setNovaSenha] = useState('');
-  const [confirmacao, setConfirmacao] = useState('');
-  const [erro, setErro] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!senhaAtual) return setErro('Informe a senha provisória recebida por e-mail.');
-    if (novaSenha.length < 8) return setErro('A nova senha deve ter pelo menos 8 caracteres.');
-    if (novaSenha !== confirmacao) return setErro('As senhas não coincidem.');
-    if (novaSenha === senhaAtual) return setErro('A nova senha precisa ser diferente da senha provisória.');
-
-    setErro('');
-    setIsSubmitting(true);
-    try {
-      await authenticatedFetch<void>('/usuarios/me/senha', {
-        method: 'PATCH',
-        body: JSON.stringify({ senhaAtual, novaSenha }),
-        retries: 0,
-      });
-      setSenhaProvisoria(false);
-      onConcluido();
-    } catch (error) {
-      setErro(error instanceof ApiError ? error.message : 'Não foi possível trocar a senha.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+export function TrocaSenhaPage({ perfil, onConcluido, onSair }: TrocaSenhaPageProps) {
+  const form = usePasswordChangeForm({ onConcluido, exigirSenhaAtual: perfil !== 'PACIENTE' });
   return (
-    <main className="login-page" aria-label="Troca de senha do SUSpiro">
-      <section className="login-container" aria-label="Troca de senha">
-        <BrandPanel />
-        <section className="login-form-panel" aria-label="Formulário de troca de senha">
-          <article className="login-login-form" aria-labelledby="troca-senha-title">
-            <header>
-              <h1 id="troca-senha-title" className="login-login-form__title">Cadastre sua nova senha</h1>
-              <p className="login-login-form__subtitle">
-                Você entrou com uma senha provisória. Defina uma senha pessoal para liberar o acesso ao sistema.
-              </p>
-            </header>
+    <main className="weak-password-page" aria-label="Proteção obrigatória da conta">
+      <section
+        className="weak-password-modal"
+        aria-labelledby="troca-senha-title"
+        aria-describedby="troca-senha-description"
+      >
+        <div className="weak-password-modal__panel">
+          <h1 id="troca-senha-title" className="weak-password-modal__title">
+            Crie sua nova senha pessoal
+          </h1>
+          <div id="troca-senha-description" className="weak-password-modal__text">
+            <p>Para concluir o primeiro acesso, crie uma senha pessoal forte.</p>
+            {perfil === 'PACIENTE' ? (
+              <p>Você entrou com uma senha temporária enviada por e-mail. Não é necessário informá-la novamente.</p>
+            ) : (
+              <p>Use a senha inicial fornecida pela equipe e depois crie sua senha pessoal.</p>
+            )}
+            <p>Use de 12 a 72 caracteres, incluindo maiúsculas, minúsculas, número e símbolo. Evite reutilizar senhas de outros serviços.</p>
+          </div>
 
-            <form onSubmit={handleSubmit} noValidate aria-label="Formulário de troca de senha">
+          <form onSubmit={form.handleSubmit} noValidate aria-label="Troca obrigatória de senha">
+            {perfil !== 'PACIENTE' && (
               <PasswordField
-                label="Senha provisória"
+                label="Senha atual ou inicial"
                 autoComplete="current-password"
                 required
-                value={senhaAtual}
-                onChange={(event) => setSenhaAtual(event.target.value)}
+                data-autofocus
+                value={form.senhaAtual}
+                onChange={(event) => form.setSenhaAtual(event.target.value)}
               />
-              <PasswordField
-                label="Nova senha"
-                placeholder="Mínimo 8 caracteres"
-                autoComplete="new-password"
-                required
-                value={novaSenha}
-                onChange={(event) => setNovaSenha(event.target.value)}
-              />
-              <PasswordField
-                label="Confirmar nova senha"
-                autoComplete="new-password"
-                required
-                value={confirmacao}
-                onChange={(event) => setConfirmacao(event.target.value)}
-              />
+            )}
+            <PasswordField
+              label="Nova senha forte"
+              hint="12 a 72 caracteres, com maiúscula, minúscula, número e símbolo."
+              autoComplete="new-password"
+              data-autofocus={perfil === 'PACIENTE' ? true : undefined}
+              minLength={12}
+              maxLength={72}
+              required
+              value={form.novaSenha}
+              onChange={(event) => form.setNovaSenha(event.target.value)}
+            />
+            <PasswordField
+              label="Confirmar nova senha"
+              autoComplete="new-password"
+              minLength={12}
+              maxLength={72}
+              required
+              value={form.confirmacao}
+              onChange={(event) => form.setConfirmacao(event.target.value)}
+            />
 
-              {erro && <p className="login-form-error" role="alert">{erro}</p>}
+            {form.erro && <p className="login-form-error" role="alert">{form.erro}</p>}
 
-              <Button type="submit" variant="primary" fullWidth className="login-login-form__submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Salvando...' : 'Salvar nova senha'}
+            <div className="weak-password-modal__actions">
+              <Button type="submit" fullWidth disabled={form.isSubmitting} aria-busy={form.isSubmitting}>
+                {form.isSubmitting ? 'Salvando senha...' : 'Salvar nova senha e continuar'}
               </Button>
-              <button
-                type="button"
-                className="login-link login-link--button login-link--back"
-                onClick={onSair}
-                disabled={isSubmitting}
-              >
-                Sair
-              </button>
-            </form>
-          </article>
-        </section>
+              <Button type="button" variant="secondary" fullWidth onClick={onSair} disabled={form.isSubmitting}>
+                Sair da conta
+              </Button>
+            </div>
+          </form>
+        </div>
       </section>
     </main>
   );

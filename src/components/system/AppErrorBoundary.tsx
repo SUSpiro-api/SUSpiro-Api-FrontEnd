@@ -1,10 +1,9 @@
-// Mostra uma mensagem quando ocorre um erro inesperado na interface.
-
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { MaterialIcon } from '../icons';
 
 interface AppErrorBoundaryProps {
   children: ReactNode;
+  resetKey?: string;
 }
 
 interface AppErrorBoundaryState {
@@ -20,6 +19,12 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
     console.error('Erro não tratado na interface SUSpiro.', error, info.componentStack);
+  }
+
+  componentDidUpdate(previousProps: AppErrorBoundaryProps): void {
+    if (previousProps.resetKey !== this.props.resetKey && this.state.hasError) {
+      this.setState({ hasError: false });
+    }
   }
 
   handleRetry = (): void => {

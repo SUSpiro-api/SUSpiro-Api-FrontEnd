@@ -1,5 +1,3 @@
-// Salva e remove dados simples no navegador.
-
 export interface StorageAdapter {
   get<T>(key: string): T | null;
   set<T>(key: string, value: T): void;

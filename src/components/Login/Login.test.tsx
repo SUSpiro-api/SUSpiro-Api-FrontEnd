@@ -6,6 +6,8 @@ import type { AuthService } from '../../features/auth/types';
 function renderLogin(overrides?: Partial<AuthService>) {
   const authService: AuthService = {
     login: vi.fn().mockResolvedValue(undefined),
+    restoreSession: vi.fn().mockResolvedValue(null),
+    logout: vi.fn().mockResolvedValue(undefined),
     requestPasswordReset: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
@@ -32,15 +34,25 @@ describe('Login', () => {
   it('submits normalized CPF credentials to the authentication service', async () => {
     const authService = renderLogin();
 
-    fireEvent.change(screen.getByLabelText('CPF'), { target: { value: '529.982.247-25' } });
+    fireEvent.change(screen.getByLabelText('CPF'), { target: { value: '111.444.777-35' } });
     fireEvent.change(screen.getByLabelText('Senha de acesso'), { target: { value: 'senha1234' } });
     fireEvent.submit(screen.getByRole('form', { name: 'Formulário de autenticação' }));
 
     await waitFor(() => {
       expect(authService.login).toHaveBeenCalledWith({
-        cpf: '529.982.247-25',
+        cpf: '111.444.777-35',
         password: 'senha1234',
       });
     });
   });
+  it('uses the same login form for a patient with a temporary password', () => {
+    renderLogin();
+
+    expect(screen.getByRole('form', { name: 'Formulário de autenticação' })).toBeInTheDocument();
+    expect(screen.getByLabelText('CPF')).toBeInTheDocument();
+    expect(screen.getByLabelText('Senha de acesso')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Entrar como paciente/i })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Data de nascimento')).not.toBeInTheDocument();
+  });
+
 });

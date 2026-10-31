@@ -1,5 +1,3 @@
-// Confere os dados informados no cadastro de funcionário.
-
 import { isValidCpf } from '../../utils/cpf';
 
 export const NOME_MAX_LENGTH = 150;
@@ -30,4 +28,13 @@ export function validateSenhaFuncionario(value: string): string {
 
 export function validateConfirmarSenha(senha: string, confirmar: string): string {
   return senha === confirmar ? '' : 'As senhas não coincidem.';
+}
+
+export function validateEmailFuncionario(value: string): string {
+  const email = value.trim();
+  if (!email) return 'Informe o e-mail do funcionário.';
+  if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return 'Informe um e-mail válido.';
+  }
+  return '';
 }

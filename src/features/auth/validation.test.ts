@@ -3,7 +3,7 @@ import { validateLoginCpf, validatePassword, validateResetCpf } from './validati
 
 describe('auth validation', () => {
   it('accepts a valid CPF', () => {
-    expect(validateLoginCpf('529.982.247-25')).toBe('');
+    expect(validateLoginCpf('111.444.777-35')).toBe('');
   });
 
   it('rejects an invalid CPF', () => {
@@ -19,7 +19,7 @@ describe('auth validation', () => {
   });
 
   it('validates recovery CPF', () => {
-    expect(validateResetCpf('52998224725')).toBe('');
+    expect(validateResetCpf('11144477735')).toBe('');
     expect(validateResetCpf('123')).toContain('CPF válido');
   });
 });
